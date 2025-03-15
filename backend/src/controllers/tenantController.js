@@ -37,6 +37,9 @@ const tenantSignup = async (req, res) => {
         });
 
         await newTenant.save();
+        
+        // Send Welcome Email
+        await sendWelcomeEmail(email, firstName);
 
         const accessToken = jwt.sign(
             { tenantId: newTenant._id, email: newTenant.email, role: "tenant" },
@@ -210,6 +213,24 @@ const changePassword = async (req, res) => {
 
     return res.json({ error: false });
 }
+
+
+// Function to send a welcome email
+const sendWelcomeEmail = async (email, firstName) => {
+    try {
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: "🎉 Welcome to PG Finder!",
+            text: `Hello ${firstName},\n\nWelcome to PG Finder! We are excited to have you on board.\n\nStart exploring and find the best PGs around you!\n\nHappy Searching!\nPG Finder Team`
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log("Welcome email sent successfully to", email);
+    } catch (error) {
+        console.error("Error sending welcome email:", error);
+    }
+};
 
 module.exports = {
     tenantLogin,

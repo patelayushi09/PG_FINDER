@@ -8,9 +8,9 @@ const dotenv = require('dotenv').config()
 // Landlord signup
 const landlordSignup = async (req, res) => {
     try {
-        const { name, email, phoneno, propertyName, propertyAddress, propertyState, propertyId, createPassword, confirmPassword } = req.body;
+        const { name, email, phoneno, agencyName, licenseNo, experienceYears, rating, address, createPassword, confirmPassword } = req.body;
 
-        if (!name || !email || !phoneno || !propertyName || !propertyAddress || !propertyState || !propertyId || !createPassword || !confirmPassword) {
+        if (!name || !email || !phoneno || !agencyName || !licenseNo || !experienceYears || !rating || !address || !createPassword || !confirmPassword) {
             return res.status(400).json({ error: true, message: "All fields are required" });
         }
 
@@ -29,15 +29,19 @@ const landlordSignup = async (req, res) => {
             name,
             email,
             phoneno,
-            propertyName,
-            propertyAddress,
-            propertyState,
-            propertyId,
+            agencyName,
+            licenseNo,
+            experienceYears,
+            rating,
+            address,
             createPassword: hashedPassword,
             confirmPassword: hashedPassword,
         });
 
         await newLandlord.save();
+
+        // Send Welcome Email
+        await sendWelcomeEmail(email, name);
 
         const accessToken = jwt.sign(
             { landlordId: newLandlord._id, email: newLandlord.email, role: "landlord" },
@@ -58,14 +62,14 @@ const landlordSignup = async (req, res) => {
 // landlord login
 const landlordLogin = async (req, res) => {
     const { email, password } = req.body;
-   
+
 
     if (!email || !password) {
         return res.json({ error: true, message: "Email and password are required" });
     }
 
     const landlord = await Landlord.findOne({ email: email });
-    
+
 
     if (!landlord) {
         return res.json({ error: true, message: "Invalid email" });
@@ -73,7 +77,7 @@ const landlordLogin = async (req, res) => {
 
     const match = await bcrypt.compare(password, landlord.createPassword || landlord.password);
 
-    
+
 
     if (!match) {
         return res.json({ error: true, message: "Invalid password" });
@@ -204,6 +208,25 @@ const changePassword = async (req, res) => {
 
     return res.json({ error: false });
 }
+
+
+// Function to send a welcome email
+const sendWelcomeEmail = async (email, firstName) => {
+    try {
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: "🎉 Welcome to PG Finder, Landlord!",
+            text: `Hello ${firstName},\n\nWelcome to PG Finder! We are excited to have you as a part of our community.\n\nStart listing your PGs and connect with potential tenants easily!\n\nHappy Renting!\nPG Finder Team`
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log("Welcome email sent successfully to", email);
+    } catch (error) {
+        console.error("Error sending welcome email:", error);
+    }
+};
+
 
 module.exports = {
     landlordSignup,

@@ -30,7 +30,6 @@ app.get("/", (req, res) => {
 const adminRoutes = require('./src/routes/adminRoutes')
 app.use("/admin", adminRoutes)
 
-
 //import landlord routes
 const landlordRoutes = require('./src/routes/landlordRoutes')
 app.use("/landlord", landlordRoutes)
@@ -51,6 +50,21 @@ app.use("/city",cityRoutes )
 const areaRoutes = require('./src/routes/areaRoutes')
 app.use("/area",areaRoutes )
 
+//import category routes
+const categoryRoutes = require('./src/routes/categoryRoutes')
+app.use("/category",categoryRoutes )
+
+//import Favorite routes
+const favoriteRoutes = require('./src/routes/favoriteRoutes')
+app.use("/favorite",favoriteRoutes )
+
+//import Property routes
+const propertyRoutes = require('./src/routes/propertyRoutes')
+app.use("/property",propertyRoutes )
+
+//import Inquiry  routes
+const inquiryRoutes = require('./src/routes/inquiryRoutes')
+app.use("/inquiry",inquiryRoutes )
 
 
 app.listen(port, () => {

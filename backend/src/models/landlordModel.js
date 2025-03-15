@@ -11,16 +11,19 @@ const LandlordSchema = new Schema({
     phoneno: {
         type: String,
     },
-    propertyName: {
+    agencyName: {
         type: String,
     },
-    propertyAddress: {
+    licenseNo: {
         type: String,
     },
-    propertyState: {
-        type: String,
+    experienceYears: {
+        type: Number,
     },
-    propertyId: {
+    rating: {
+        type: Number,
+    },
+    address: {
         type: String,
     },
     createPassword: {

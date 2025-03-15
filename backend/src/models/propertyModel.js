@@ -9,7 +9,8 @@ const PropertySchema = new Schema({
         type: String,
     },
     categoryId: {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: "Category",
     },
     address: {
         type: String,
