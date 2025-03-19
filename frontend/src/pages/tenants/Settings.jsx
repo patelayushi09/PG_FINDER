@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { User, Lock, Bell, CreditCard } from 'lucide-react';
 import axios from 'axios';
@@ -21,14 +20,15 @@ function Settings() {
     location: ''
   });
 
+  
   useEffect(() => {
     fetchTenantData();
   }, []);
 
   const fetchTenantData = async () => {
     try {
-      // TODO: Replace with actual tenant ID from auth context
-      const tenantId = "dummy-tenant-id";
+      //const token = localStorage.getItem("accessToken");
+      const tenantId = localStorage.getItem("tenantId"); 
       const response = await axios.get(`http://localhost:5000/tenant/${tenantId}`);
       const tenantData = response.data.data;
       
@@ -54,8 +54,7 @@ function Settings() {
 
   const handleSaveChanges = async () => {
     try {
-      // TODO: Replace with actual tenant ID from auth context
-      const tenantId = "dummy-tenant-id";
+      const tenantId = localStorage.getItem("tenantId");
       
       // Split full name into first and last name
       const [firstName, ...lastNameParts] = formData.fullName.split(' ');
@@ -89,8 +88,7 @@ function Settings() {
       const formData = new FormData();
       formData.append('profileImage', file);
 
-      // TODO: Replace with actual tenant ID from auth context
-      const tenantId = "dummy-tenant-id";
+      const tenantId = localStorage.getItem("tenantId");
       
       await axios.post(`http://localhost:5000/tenant/${tenantId}/profile-image`, formData, {
         headers: {

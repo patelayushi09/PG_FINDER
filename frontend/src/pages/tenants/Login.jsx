@@ -8,34 +8,41 @@ export const Login = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate(); // Hook for navigation
 
+ 
   const submitHandler = async (e) => {
-    e.preventDefault(); // Prevent default form submission
-    setError('');
-
+    e.preventDefault();
+    setError("");
+  
     if (!email) {
-      setError('Email is required');
+      setError("Email is required");
       return;
     }
     if (!password) {
-      setError('Password is required');
+      setError("Password is required");
       return;
     }
-
+  
     try {
-      const response = await axios.post('http://localhost:5000/tenant/login', { email, password });
-
-      if (response.data.error == false) {
-        localStorage.setItem('accessToken', response.data.accessToken);
+      const response = await axios.post("http://localhost:5000/tenant/login", { email, password });
+  
+      if (response.data.error === false) {
+        localStorage.setItem("accessToken", response.data.accessToken);
+        localStorage.setItem("tenantId", response.data.tenantId);
+        localStorage.setItem("tenantName", JSON.stringify({
+          firstName: response.data.tenantName.firstName,
+          lastName: response.data.tenantName.lastName
+        }));// Store tenant's name
         alert(response.data.message);
-        navigate('/tenant-dashboard');
+        navigate("/tenant-dashboard");
       } else {
-        setError(response.data.message || 'Invalid credentials');
+        setError(response.data.message || "Invalid credentials");
       }
     } catch (error) {
       console.error(error);
-      setError(error.response?.data?.message || 'An error occurred');
+      setError(error.response?.data?.message || "An error occurred");
     }
   };
+  
 
   return (
     <div className="relative bg-gradient-to-br from-[#F6F4EB] via-[#E3DAC9] to-[#D8B258] min-h-screen flex items-center justify-center px-4 overflow-hidden">

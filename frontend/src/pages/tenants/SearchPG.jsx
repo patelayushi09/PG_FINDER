@@ -1,7 +1,3 @@
-
-
-
-
 import React, { useState, useEffect } from 'react';
 import { Search, SlidersHorizontal } from 'lucide-react';
 import axios from 'axios';
@@ -54,3 +50,4 @@ function SearchPG() {
 }
 
 export default SearchPG;
+
