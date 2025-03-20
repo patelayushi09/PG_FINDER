@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import {
-    Home,  MessageSquare,
+    Home,  MessageSquare,LayoutDashboardIcon,
     Settings, LogOut, Building2,
     AlertCircle,
     BarChart3,
@@ -13,7 +13,7 @@ export const AdminSidebar = () => {
     const [activeTab, setActiveTab] = useState("dashboard");
 
     const navItems = [
-        { name: "Dashboard", icon: PieChartIcon },
+        { name: "Dashboard", icon: LayoutDashboardIcon },
         { name: "Users", icon: User2Icon },
         { name: "Properties", icon: Home },
         { name: "Messages", icon: MessageSquare },
