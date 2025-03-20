@@ -29,9 +29,10 @@ export const AdminLogin = () => {
 
 
       if (response.data.error == false) {
-        localStorage.setItem('accessToken', response.data.accessToken);
+        localStorage.setItem("accessToken", response.data.accessToken);
+        localStorage.setItem("adminId", response.data.adminId);
         alert(response.data.message)
-        navigate('/admin');
+        navigate('/admin-dashboard');
       } else {
         setError(response.data.message || 'Invalid credentials');
       }
