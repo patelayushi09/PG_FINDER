@@ -30,7 +30,7 @@ const PropertyDetails = ({ property, onClose }) => {
             {property.furnishingStatus || "Not Specified"}
           </p>
           <p>
-            <strong>Status:</strong> {property.status || "Not Specified"}
+            <strong>Status:</strong> {property.availabilityStatus || "Not Specified"}
           </p>
           <p>
             <strong>Description:</strong>{" "}

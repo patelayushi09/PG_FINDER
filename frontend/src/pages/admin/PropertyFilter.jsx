@@ -39,7 +39,7 @@ const PropertyFilter = ({ onApplyFilter }) => {
           >
             <option value="">All</option>
             <option value="Available">Available</option>
-            <option value="Not Available">Rented</option>
+            <option value="Rented">Rented</option>
           </select>
 
           <button
