@@ -1,8 +1,10 @@
 const Admin = require('../models/adminModel')
 const bcrypt = require("bcrypt")
 const jwt = require('jsonwebtoken')
-const nodemailer = require('nodemailer');
-const otpModel = require('../models/otpModel');
+const nodemailer = require('nodemailer')
+const otpModel = require('../models/otpModel')
+const Tenant = require('../models/tenantModel')
+const Landlord = require('../models/landlordModel')
 require('dotenv').config()
 
 
@@ -155,6 +157,168 @@ const adminLogin = async (req, res) => {
 }
 
 
+// to fetch all tenants and landlords
+const getUsers = async (req, res) => {
+    try {
+        const { role, status } = req.query;
+        let tenants = [];
+        let landlords = [];
+
+        let statusFilter = status ? { status: new RegExp(`^${status}$`, "i") } : {}; // Case-insensitive filtering
+
+        if (!role || role.toLowerCase() === "tenant") {
+            tenants = await Tenant.find(statusFilter);
+        }
+
+        if (!role || role.toLowerCase() === "landlord") {
+            landlords = await Landlord.find(statusFilter); // Ensure status is filtered correctly
+        }
+
+        const formattedTenants = tenants.map((tenant) => ({
+            _id: tenant._id,
+            name: `${tenant.firstName} ${tenant.lastName}`,
+            role: "Tenant",
+            email: tenant.email,
+            phoneno: tenant.phoneno,
+            status: tenant.status,
+        }));
+
+        const formattedLandlords = landlords.map((landlord) => ({
+            _id: landlord._id,
+            name: landlord.name,
+            role: "Landlord",
+            email: landlord.email,
+            phoneno: landlord.phoneno,
+            status: landlord.status, // Default to active only if status is missing
+        }));
+
+        const users = [...formattedTenants, ...formattedLandlords];
+
+        res.json(users);
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
+
+
+// delete users
+const deleteUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        //  find and delete from Tenant collection
+        const tenant = await Tenant.findByIdAndDelete(id);
+        if (tenant) {
+            return res.status(200).json({ message: "Tenant deleted successfully" });
+        }
+
+        //  find and delete from Landlord collection
+        const landlord = await Landlord.findByIdAndDelete(id);
+        if (landlord) {
+            return res.status(200).json({ message: "Landlord deleted successfully" });
+        }
+
+        return res.status(404).json({ error: "User not found" });
+    } catch (error) {
+        console.error("Error deleting user:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
+
+// update user
+const updateUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updateData = req.body;
+
+        let user = await Tenant.findById(id);
+        if (user) {
+            const updatedTenant = await Tenant.findByIdAndUpdate(id, updateData, { new: true });
+            return res.status(200).json({ message: "Tenant updated successfully", user: updatedTenant });
+        }
+
+        user = await Landlord.findById(id);
+        if (user) {
+            const updatedLandlord = await Landlord.findByIdAndUpdate(id, updateData, { new: true });
+            return res.status(200).json({ message: "Landlord updated successfully", user: updatedLandlord });
+        }
+
+        return res.status(404).json({ error: "User not found" });
+
+    } catch (error) {
+        console.error("Error updating user:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+// get user by id
+const getUserById = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (!id || id.length !== 24) {
+            return res.status(400).json({ error: "Invalid user ID" });
+        }
+
+        let user = await Tenant.findById(id) || await Landlord.findById(id);
+
+        if (user) {
+            return res.status(200).json(user);
+        }
+
+        return res.status(404).json({ error: "User not found" });
+
+    } catch (error) {
+        console.error("Error fetching user:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
+
+
+// add users
+const addUser = async (req, res) => {
+    try {
+        console.log("Received Data:", req.body); // ✅ Debugging
+
+        const { role, createPassword, confirmPassword, ...userData } = req.body;
+
+        // Validate passwords
+        if (createPassword !== confirmPassword) {
+            return res.status(400).json({ error: "Passwords do not match" });
+        }
+
+        // Check if email exists
+        const existingUser = await Tenant.findOne({ email: userData.email }) ||
+            await Landlord.findOne({ email: userData.email });
+
+        if (existingUser) {
+            return res.status(400).json({ error: "Email already exists" });
+        }
+
+        // Hash password
+        const hashedPassword = await bcrypt.hash(createPassword, 10);
+
+        let newUser;
+        if (role === "Tenant") {
+            newUser = new Tenant({ ...userData, password: hashedPassword, status: userData.status || "Active" });
+        } else if (role === "Landlord") {
+            newUser = new Landlord({ ...userData, password: hashedPassword, status: userData.status || "Active" });
+        } else {
+            return res.status(400).json({ error: "Invalid role" });
+        }
+
+        await newUser.save();
+        res.status(201).json({ message: "User added successfully", user: newUser });
+
+    } catch (error) {
+        console.error("Error adding user:", error);
+        res.status(500).json({ error: "Internal Server Error", details: error.message });
+    }
+};
+
 
 
 
@@ -164,5 +328,10 @@ module.exports = {
     adminLogin,
     sendOTP,
     validateOTP,
-    changePassword
+    changePassword,
+    getUsers,
+    deleteUser,
+    updateUser,
+    getUserById,
+    addUser,
 }

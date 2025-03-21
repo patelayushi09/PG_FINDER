@@ -26,6 +26,9 @@ const LandlordSchema = new Schema({
     address: {
         type: String,
     },
+    status: {
+        type: String
+    },
     createPassword: {
         type: String,
     },

@@ -8,9 +8,9 @@ const dotenv = require('dotenv').config()
 // Landlord signup
 const landlordSignup = async (req, res) => {
     try {
-        const { name, email, phoneno, agencyName, licenseNo, experienceYears, rating, address, createPassword, confirmPassword } = req.body;
+        const { name, email, phoneno, agencyName, licenseNo, experienceYears, rating, address, status, createPassword, confirmPassword } = req.body;
 
-        if (!name || !email || !phoneno || !agencyName || !licenseNo || !experienceYears || !rating || !address || !createPassword || !confirmPassword) {
+        if (!name || !email || !phoneno || !agencyName || !licenseNo || !experienceYears || !rating || !address || !status || !createPassword || !confirmPassword) {
             return res.status(400).json({ error: true, message: "All fields are required" });
         }
 
@@ -34,6 +34,7 @@ const landlordSignup = async (req, res) => {
             experienceYears,
             rating,
             address,
+            status,
             createPassword: hashedPassword,
             confirmPassword: hashedPassword,
         });

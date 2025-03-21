@@ -18,6 +18,7 @@ export const LandlordSignUp = () => {
     experienceYears: "",
     rating: "",
     address: "",
+    status: "",
     createPassword: "",
     confirmPassword: ""
   });
@@ -74,14 +75,14 @@ export const LandlordSignUp = () => {
 
   return (
     <div className="relative bg-gradient-to-br from-[#F6F4EB] via-[#E3DAC9] to-[#D8B258] min-h-screen flex items-center justify-center px-4 overflow-hidden">
-       {/* Background */}
-       <div className="absolute top-0 left-0 w-full h-1/2">
+      {/* Background */}
+      <div className="absolute top-0 left-0 w-full h-1/2">
         <svg className="absolute top-0 w-full" viewBox="0 0 1440 320">
           <path fill="#D96851" fillOpacity="1" d="M0,160L80,186.7C160,213,320,267,480,277.3C640,288,800,256,960,234.7C1120,213,1280,203,1360,208L1440,224V0H0Z"></path>
           <path fill="#D8B258" fillOpacity="0.4" d="M0,224L100,192C200,160,400,96,600,128C800,160,1000,288,1200,304C1400,320,1600,256,1700,224L1800,192V0H0Z"></path>
         </svg>
       </div>
-      
+
       <form onSubmit={submitHandler}>
         <div className="relative bg-white p-12 rounded-3xl shadow-2xl w-full max-w-2xl z-10 text-center border border-gray-200 backdrop-blur-lg bg-opacity-90">
           <h2 className="text-3xl font-bold text-[#103538]">Landlord Registration</h2>
@@ -107,6 +108,7 @@ export const LandlordSignUp = () => {
               <input type="number" placeholder="Years of Experience" className="w-full p-3 border rounded-lg bg-gray-50" onChange={(e) => setSignupInformation({ ...signupInformation, experienceYears: e.target.value })} />
               <input type="number" placeholder="Rating (1-5)" className="w-full p-3 border rounded-lg bg-gray-50" onChange={(e) => setSignupInformation({ ...signupInformation, rating: e.target.value })} />
               <input type="text" placeholder="Address" className="w-full p-3 border rounded-lg bg-gray-50" onChange={(e) => setSignupInformation({ ...signupInformation, address: e.target.value })} />
+              <input type="text" placeholder="Status" className="w-full p-3 border rounded-lg bg-gray-50" onChange={(e) => setSignupInformation({ ...signupInformation, status: e.target.value })} />
               <div className="flex justify-between">
                 <button type="button" onClick={prevStep} className="bg-gray-400 text-white py-2 px-4 rounded-lg">Back</button>
                 <button type="button" onClick={nextStep} className="bg-[#103538] text-white py-2 px-4 rounded-lg">Next</button>
