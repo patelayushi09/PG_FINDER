@@ -55,7 +55,7 @@ const PropertySchema = new Schema({
     yearBuilt: {
         type: Number,
     },
-    status: {
+    availabilityStatus: {
         type: String,
     }
 });

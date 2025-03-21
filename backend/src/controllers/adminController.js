@@ -5,6 +5,7 @@ const nodemailer = require('nodemailer')
 const otpModel = require('../models/otpModel')
 const Tenant = require('../models/tenantModel')
 const Landlord = require('../models/landlordModel')
+const Property = require('../models/propertyModel')
 require('dotenv').config()
 
 
@@ -171,7 +172,7 @@ const getUsers = async (req, res) => {
         }
 
         if (!role || role.toLowerCase() === "landlord") {
-            landlords = await Landlord.find(statusFilter); // Ensure status is filtered correctly
+            landlords = await Landlord.find(statusFilter); 
         }
 
         const formattedTenants = tenants.map((tenant) => ({
@@ -189,7 +190,7 @@ const getUsers = async (req, res) => {
             role: "Landlord",
             email: landlord.email,
             phoneno: landlord.phoneno,
-            status: landlord.status, // Default to active only if status is missing
+            status: landlord.status, 
         }));
 
         const users = [...formattedTenants, ...formattedLandlords];
@@ -319,7 +320,89 @@ const addUser = async (req, res) => {
     }
 };
 
+// Add Property
+const addProperty = async (req, res) => {
+    try {
+        const propertyData = req.body;
 
+        const newProperty = new Property(propertyData);
+        await newProperty.save();
+
+        return res.status(201).json({ message: "Property added successfully", property: newProperty });
+    } catch (error) {
+        console.error("Error adding property:", error);
+        return res.status(500).json({ error: "Internal Server Error", details: error.message });
+    }
+};
+
+// Get All Properties
+const getProperties = async (req, res) => {
+    try {
+        const properties = await Property.find().populate("cityId").populate("areaId");
+        res.json(properties);
+      } catch (error) {
+        res.status(500).json({ success: false, message: "Error fetching properties", error });
+      }
+};
+
+// Get Property by ID
+const getPropertyById = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (!id || id.length !== 24) {
+            return res.status(400).json({ error: "Invalid property ID" });
+        }
+
+        const property = await Property.findById(id).populate("categoryId cityId stateId areaId tenantId");
+
+        if (!property) {
+            return res.status(404).json({ error: "Property not found" });
+        }
+
+        return res.status(200).json(property);
+    } catch (error) {
+        console.error("Error fetching property:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
+// Update Property
+const updateProperty = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updateData = req.body;
+
+        const updatedProperty = await Property.findByIdAndUpdate(id, updateData, { new: true });
+
+        if (!updatedProperty) {
+            return res.status(404).json({ error: "Property not found" });
+        }
+
+        return res.status(200).json({ message: "Property updated successfully", property: updatedProperty });
+    } catch (error) {
+        console.error("Error updating property:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
+// Delete Property
+const deleteProperty = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const deletedProperty = await Property.findByIdAndDelete(id);
+
+        if (!deletedProperty) {
+            return res.status(404).json({ error: "Property not found" });
+        }
+
+        return res.status(200).json({ message: "Property deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting property:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+};
 
 
 
@@ -334,4 +417,9 @@ module.exports = {
     updateUser,
     getUserById,
     addUser,
+    addProperty,
+    getProperties,
+    getPropertyById,
+    updateProperty,
+    deleteProperty,
 }
