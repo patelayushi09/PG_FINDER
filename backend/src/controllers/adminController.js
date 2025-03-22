@@ -172,15 +172,17 @@ const getUsers = async (req, res) => {
         }
 
         if (!role || role.toLowerCase() === "landlord") {
-            landlords = await Landlord.find(statusFilter); 
+            landlords = await Landlord.find(statusFilter);
         }
 
         const formattedTenants = tenants.map((tenant) => ({
             _id: tenant._id,
-            name: `${tenant.firstName} ${tenant.lastName}`,
+            firstName: `${tenant.firstName}`,
+            lastName: `${tenant.lastName}`,
             role: "Tenant",
             email: tenant.email,
             phoneno: tenant.phoneno,
+            gender: tenant.gender,
             status: tenant.status,
         }));
 
@@ -190,10 +192,16 @@ const getUsers = async (req, res) => {
             role: "Landlord",
             email: landlord.email,
             phoneno: landlord.phoneno,
-            status: landlord.status, 
+            agencyName: landlord.agencyName,
+            rating: landlord.rating,
+            address: landlord.address,
+            licenseNo: landlord.licenseNo,
+            experienceYears: landlord.experienceYears,
+            status: landlord.status,
         }));
 
         const users = [...formattedTenants, ...formattedLandlords];
+
 
         res.json(users);
     } catch (error) {
@@ -340,9 +348,9 @@ const getProperties = async (req, res) => {
     try {
         const properties = await Property.find().populate("cityId").populate("areaId");
         res.json(properties);
-      } catch (error) {
+    } catch (error) {
         res.status(500).json({ success: false, message: "Error fetching properties", error });
-      }
+    }
 };
 
 // Get Property by ID

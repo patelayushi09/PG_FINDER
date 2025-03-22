@@ -20,14 +20,14 @@ function AdminHomePage() {
     const fetchDashboardData = async () => {
       try {
         const token = localStorage.getItem('accessToken');
-        const adminId = localStorage.getItem('adminId');
+        // const adminId = localStorage.getItem('adminId');
 
-        if (!adminId) {
+        if (!token) {
           navigate('/admin/login');
           return;
         }
 
-        const response = await axios.get(`http://localhost:5000/admin/dashboard/${adminId}`, {
+        const response = await axios.get(`http://localhost:5000/admin/dashboard`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

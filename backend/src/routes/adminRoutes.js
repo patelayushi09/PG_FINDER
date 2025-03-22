@@ -24,4 +24,6 @@ router.put("/properties/:id",adminController.updateProperty)
 router.get("/properties/:id",adminController.getPropertyById)
 router.post("/properties",adminController.addProperty)
 
+// router.get("/dashboard", adminController.getDashboard)
+
 module.exports = router
