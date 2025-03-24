@@ -34,6 +34,10 @@ const PropertySchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "Tenant",
     },
+    landlordId: {
+        type: Schema.Types.ObjectId,
+        ref: "landlord",
+    },
     description: {
         type: String,
     },
@@ -52,12 +56,13 @@ const PropertySchema = new Schema({
     furnishingStatus: {
         type: String,
     },
-    yearBuilt: {
-        type: Number,
-    },
     availabilityStatus: {
         type: String,
-    }
+    },
+    image: {
+        type: String,
+    },
+   
 });
 
 module.exports = mongoose.model('Property', PropertySchema)

@@ -93,7 +93,12 @@ const tenantLogin = async (req, res) => {
     return res.status(200).json({
         error: false,
         message: "Login successful",
-        accessToken
+        accessToken: accessToken,
+        tenantId: tenant._id,
+        tenantName: {
+            firstName: tenant.firstName,
+            lastName: tenant.lastName
+        }
     });
 };
 

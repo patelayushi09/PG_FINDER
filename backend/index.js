@@ -50,22 +50,7 @@ app.use("/city",cityRoutes )
 const areaRoutes = require('./src/routes/areaRoutes')
 app.use("/area",areaRoutes )
 
-//import category routes
-const categoryRoutes = require('./src/routes/categoryRoutes')
-app.use("/category",categoryRoutes )
-
-//import Favorite routes
-const favoriteRoutes = require('./src/routes/favoriteRoutes')
-app.use("/favorite",favoriteRoutes )
-
-//import Property routes
-const propertyRoutes = require('./src/routes/propertyRoutes')
-app.use("/property",propertyRoutes )
-
-//import Inquiry  routes
-const inquiryRoutes = require('./src/routes/inquiryRoutes')
-app.use("/inquiry",inquiryRoutes )
-
+/
 
 app.listen(port, () => {
     console.log(`PG_FINDER listening on port ${port}`);

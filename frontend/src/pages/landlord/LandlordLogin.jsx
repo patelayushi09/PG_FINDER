@@ -9,9 +9,9 @@ export const LandlordLogin = () => {
     const navigate = useNavigate(); // Hook for navigation
 
     const submitHandler = async (e) => {
-        e.preventDefault(); // Prevent default form submission
+        e.preventDefault(); 
         setError('');
-
+    
         if (!email) {
             setError('Email is required');
             return;
@@ -20,13 +20,16 @@ export const LandlordLogin = () => {
             setError('Password is required');
             return;
         }
-
+    
         try {
             const response = await axios.post('http://localhost:5000/landlord/login', { email, password });
-
-            if (response.data.error == false) {
+    
+            if (response.data.error === false) {
                 localStorage.setItem('accessToken', response.data.accessToken);
-                alert(response.data.message)
+                localStorage.setItem("landlordId", response.data.landlordId);
+                localStorage.setItem("landlordName", JSON.stringify(response.data.landlordName));
+
+                alert(response.data.message);
                 navigate('/landlord-dashboard');
             } else {
                 setError(response.data.message || 'Invalid credentials');
@@ -36,6 +39,7 @@ export const LandlordLogin = () => {
             setError(error.response?.data?.message || 'An error occurred');
         }
     };
+    
 
     return (
         <div className="relative bg-gradient-to-br from-[#F6F4EB] via-[#E3DAC9] to-[#D8B258] min-h-screen flex items-center justify-center px-4 overflow-hidden">

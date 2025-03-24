@@ -3,7 +3,8 @@ const bcrypt = require("bcrypt")
 const jwt = require('jsonwebtoken')
 const nodemailer = require('nodemailer');
 const otpModel = require('../models/otpModel');
-const dotenv = require('dotenv').config()
+const Property = require('../models/propertyModel')
+require('dotenv').config()
 
 // Landlord signup
 const landlordSignup = async (req, res) => {
@@ -61,39 +62,47 @@ const landlordSignup = async (req, res) => {
 };
 
 // landlord login
+
+
+
 const landlordLogin = async (req, res) => {
-    const { email, password } = req.body;
+    try {
+        const { email, password } = req.body;
 
+        if (!email || !password) {
+            return res.status(400).json({ error: true, message: "Email and password are required" });
+        }
 
-    if (!email || !password) {
-        return res.json({ error: true, message: "Email and password are required" });
+        const landlord = await Landlord.findOne({ email });
+
+        if (!landlord) {
+            return res.status(401).json({ error: true, message: "Invalid email or password" });
+        }
+
+        const match = await bcrypt.compare(password, landlord.createPassword);
+
+        if (!match) {
+            return res.status(401).json({ error: true, message: "Invalid email or password" });
+        }
+
+        const accessToken = jwt.sign(
+            { landlordId: landlord._id, email: landlord.email, role: "landlord" },
+            process.env.ACCESS_TOKEN_SECRET,
+            { expiresIn: "1d" }
+        );
+
+        return res.status(200).json({
+            error: false,
+            message: "Login successful",
+            accessToken,
+            landlordId: landlord._id,
+            landlordName: landlord.name, // Fix: Correctly return landlord name
+        });
+    } catch (error) {
+        return res.status(500).json({ error: true, message: "Server error", details: error.message });
     }
+};
 
-    const landlord = await Landlord.findOne({ email: email });
-
-
-    if (!landlord) {
-        return res.json({ error: true, message: "Invalid email" });
-    }
-
-    const match = await bcrypt.compare(password, landlord.createPassword || landlord.password);
-
-
-
-    if (!match) {
-        return res.json({ error: true, message: "Invalid password" });
-    }
-
-    const accessToken = jwt.sign({ landlordId: landlord._id, email: landlord.email, role: "landlord" }, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: "1d",
-    });
-
-    return res.status(200).json({
-        error: false,
-        message: "Login successful",
-        accessToken
-    });
-}
 
 var transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -229,10 +238,106 @@ const sendWelcomeEmail = async (email, firstName) => {
 };
 
 
+// Add Property
+const addProperty = async (req, res) => {
+    try {
+        const propertyData = req.body;
+
+        const newProperty = new Property(propertyData);
+        await newProperty.save();
+        console.log(newProperty)
+        return res.status(201).json({ message: "Property added successfully", property: newProperty });
+       
+    } catch (error) {
+        console.error("Error adding property:", error);
+        return res.status(500).json({ error: "Internal Server Error", details: error.message });
+    }
+};
+
+// Get All Properties
+const getProperties = async (req, res) => {
+    try {
+        const properties = await Property.find().populate("stateId").populate("cityId").populate("areaId");
+        res.json(properties);
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Error fetching properties", error });
+    }
+};
+
+// Get Property by ID
+const getPropertyById = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (!id || id.length !== 24) {
+            return res.status(400).json({ error: "Invalid property ID" });
+        }
+
+        const property = await Property.findById(id).populate("categoryId cityId stateId areaId tenantId");
+
+        if (!property) {
+            return res.status(404).json({ error: "Property not found" });
+        }
+
+        return res.status(200).json(property);
+    } catch (error) {
+        console.error("Error fetching property:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
+// Update Property
+const updateProperty = async (req, res) => {
+    try {
+      const { id } = req.params; // Extract _id from URL
+      const updatedData = req.body;
+  
+      // Validate ID format
+      if (!id || id.length !== 24) {
+        return res.status(400).json({ error: "Invalid property ID" });
+      }
+  
+      // Find and update the property
+      const updatedProperty = await Property.findByIdAndUpdate(id, updatedData, { new: true });
+  
+      if (!updatedProperty) {
+        return res.status(404).json({ error: "Property not found" });
+      }
+  
+      res.status(200).json(updatedProperty);
+    } catch (error) {
+      console.error("Error updating property:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  };
+
+// Delete Property
+const deleteProperty = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const deletedProperty = await Property.findByIdAndDelete(id);
+
+        if (!deletedProperty) {
+            return res.status(404).json({ error: "Property not found" });
+        }
+
+        return res.status(200).json({ message: "Property deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting property:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
 module.exports = {
     landlordSignup,
     landlordLogin,
     sendOTP,
     validateOTP,
     changePassword,
+    deleteProperty,
+    updateProperty,
+    getPropertyById,
+    getProperties,
+    addProperty
 };
