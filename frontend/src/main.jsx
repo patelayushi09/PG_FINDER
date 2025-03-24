@@ -49,7 +49,7 @@ const router = createBrowserRouter([
         element: <Dashboard />
       },
       {
-        path: "/tenant-dashboard/search pg",
+        path: "/tenant-dashboard/search-pg",
         element: <SearchPG />
       },
       {
@@ -61,7 +61,7 @@ const router = createBrowserRouter([
         element: <Favorites />
       },
       {
-        path: "/tenant-dashboard/my bookings",
+        path: "/tenant-dashboard/my-bookings",
         element: <MyBookings />
       },
       {

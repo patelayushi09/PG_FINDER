@@ -19,7 +19,7 @@ export function Header(tenantName) {
   }, []);
 
   return (
-    <header className="bg-white shadow-sm">
+    <header className="bg-[#E6F0ED] shadow-sm">
       <div className="flex items-center justify-between px-8 py-4">
         {/* Show Logged-in User Name */}
         <h2 className="text-xl font-semibold text-[#103538]">

@@ -122,6 +122,7 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
 
           {/* Property Details */}
           <input type="number" placeholder="Base Price" className="w-full p-2 border rounded" {...register("basePrice", { required: true })} />
+          <input type="number" placeholder="Rating " className="w-full p-2 border rounded" {...register("rating", { required: true })} />
           <input type="number" placeholder="Bedrooms" className="w-full p-2 border rounded" {...register("bedrooms", { required: true })} />
           <input type="number" placeholder="Bathrooms" className="w-full p-2 border rounded" {...register("bathrooms", { required: true })} />
           <textarea placeholder="Description" className="w-full p-2 border rounded" {...register("description", { required: true })}></textarea>

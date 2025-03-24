@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt")
 const jwt = require('jsonwebtoken')
 const nodemailer = require('nodemailer');
 const otpModel = require('../models/otpModel');
+const Property = require('../models/propertyModel')
 require('dotenv').config()
 
 // Tenant signup
@@ -237,10 +238,24 @@ const sendWelcomeEmail = async (email, firstName) => {
     }
 };
 
+
+//Get all PG listings
+const getProperty =async(req,res)=>{
+    try {
+        const properties = await Property.find().populate("stateId").populate("cityId"); // Fetch all properties from DB
+        res.status(200).json({ success: true, data: properties });
+      } catch (error) {
+        console.error('Error fetching properties:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+      }
+}
+
+
 module.exports = {
     tenantLogin,
     tenantSignup,
     sendOTP,
     validateOTP,
     changePassword,
+    getProperty
 };

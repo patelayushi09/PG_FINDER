@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
     Home, MessageSquare, LayoutDashboardIcon,
-    Settings, LogOut, Building2,
+    Settings, Building2,
     AlertCircle, BarChart3, User2Icon
 } from "lucide-react";
 
