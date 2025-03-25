@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
+import { FileUploaderRegular } from '@uploadcare/react-uploader';
+import '@uploadcare/react-uploader/core.css';
 
 const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
   const { register, handleSubmit, reset } = useForm();
@@ -13,6 +15,11 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [occupancy, setOccupancy] = useState(0);
+  const [key, setKey] = useState('');
+  const [image, setImage] = useState('');
+  const [imageError, setImageError] = useState('');
+
+
 
   // Fetch all states
   useEffect(() => {
@@ -46,9 +53,14 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
       .catch((error) => console.error("Error fetching areas:", error));
   }, [selectedCity]);
 
-  // Handle file selection
-  const handleFileChange = (event) => {
-    setSelectedImage(event.target.files[0]);
+
+
+  const handleFileChange = (fileList) => {
+    if (fileList && fileList.allEntries.length > 0) {
+      const fileInfo = fileList.allEntries[0];
+      setImage(fileInfo.cdnUrl);
+      setImageError(''); // Clear image error if a file is uploaded
+    }
   };
 
   // Handle form submission
@@ -63,8 +75,8 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
     formData.append("areaId", selectedArea);
     formData.append("occupancy", occupancy.toString());
 
-    if (selectedImage) {
-      formData.append("image", selectedImage);
+    if (image) {
+      formData.append("image", image);
     }
 
     try {
@@ -91,6 +103,7 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
           <input type="text" placeholder="Title" className="w-full p-2 border rounded" {...register("title", { required: true })} />
           <input type="text" placeholder="Property Name" className="w-full p-2 border rounded" {...register("propertyName", { required: true })} />
           <input type="text" placeholder="Address" className="w-full p-2 border rounded" {...register("address", { required: true })} />
+
 
           {/* Location Dropdowns */}
           <select className="w-full p-2 border rounded" value={selectedState} onChange={(e) => setSelectedState(e.target.value)} required>
@@ -156,9 +169,18 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
           </select>
 
           {/* File Upload */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">Property Image</label>
-            <input type="file" className="w-full p-2 border rounded" accept="image/*" onChange={handleFileChange} required />
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Upload Property Image
+            </label>
+            <FileUploaderRegular
+              onChange={handleFileChange}
+              pubkey={import.meta.env.VITE_UPLOAD_CARE_PUBLIC_KEY}
+              accept="image/*"
+              className="file-uploader"
+            />
+
           </div>
 
           {/* Buttons */}

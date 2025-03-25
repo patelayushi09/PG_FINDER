@@ -1,12 +1,18 @@
 
-
-
-
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Home, Users, DollarSign, Building2 } from "lucide-react";
+import {useNavigate} from 'react-router-dom';
+
 
 function LandlordHomePage() {
+  const navigate = useNavigate();
+  useEffect(()=>{
+    const token = localStorage.getItem('accessToken');
+    if(!token){
+      navigate('/landlord/login')
+    }
+  },[])
   const stats = [
     { title: "Total PGs", value: "12", trend: "+5.6%", icon: Building2 },
     { title: "Active Listings", value: "8", trend: "+3.2%", icon: Home },

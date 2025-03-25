@@ -242,7 +242,7 @@ const sendWelcomeEmail = async (email, firstName) => {
 const addProperty = async (req, res) => {
     try {
         const propertyData = req.body;
-
+        console.log(req.body)
         const newProperty = new Property(propertyData);
         await newProperty.save();
         console.log(newProperty)
@@ -257,8 +257,9 @@ const addProperty = async (req, res) => {
 // Get All Properties
 const getProperties = async (req, res) => {
     try {
+        console.log(req.user)
         const properties = await Property.find().populate("stateId").populate("cityId").populate("areaId");
-        res.json(properties);
+        res.json(properties, req.user.landlordId);
     } catch (error) {
         res.status(500).json({ success: false, message: "Error fetching properties", error });
     }

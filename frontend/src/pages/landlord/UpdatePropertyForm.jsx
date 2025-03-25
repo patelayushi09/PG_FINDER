@@ -104,6 +104,7 @@ const UpdatePropertyForm = ({ property, onClose, onPropertyUpdated }) => {
             className="w-full p-2 border rounded"
             {...register("address", { required: true })}
           />
+           
 
           {/* State Dropdown */}
           <select

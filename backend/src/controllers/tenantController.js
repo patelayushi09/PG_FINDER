@@ -5,6 +5,7 @@ const nodemailer = require('nodemailer');
 const otpModel = require('../models/otpModel');
 const Property = require('../models/propertyModel')
 const Favorite = require('../models/favoriteModel')
+const Booking = require('../models/bookingModel')
 require('dotenv').config()
 
 // Tenant signup
@@ -275,8 +276,8 @@ const getFavorites = async (req, res) => {
                 basePrice: fav.propertyId.basePrice,
                 furnishingStatus: fav.propertyId.furnishingStatus,
                 rating: fav.propertyId.rating,
-                city: fav.propertyId.cityId?.name || "Unknown",  
-                state: fav.propertyId.stateId?.name || "Unknown", 
+                city: fav.propertyId.cityId?.name || "Unknown",
+                state: fav.propertyId.stateId?.name || "Unknown",
             }));
 
         res.status(200).json({ success: true, data: properties });
@@ -354,7 +355,101 @@ const removeFavorite = async (req, res) => {
     }
 }
 
+// Create a new booking
+const createBooking = async (req, res) => {
+    try {
+        console.log(req.user)
+        const { tenantId, propertyId, checkInDate, checkOutDate, totalAmount } = req.body;
 
+        // if (!tenantId || !propertyId || !landlordId || !checkInDate || !checkOutDate || !totalAmount) {
+        //     return res.status(400).json({ error: true, message: "All fields are required" });
+        // }
+
+        const newBooking = new Booking({
+            tenantId,
+            propertyId,
+            landlordId: req.user.landlordId,
+            checkInDate,
+            checkOutDate,
+            totalAmount,
+            status: "pending",
+            paymentStatus: "pending"
+        });
+
+        await newBooking.save();
+
+        res.status(201).json({ success: true, message: "Booking request submitted", data: newBooking });
+    } catch (error) {
+        res.status(500).json({ error: true, message: "Server error", details: error.message });
+    }
+};
+
+// Get bookings by tenant
+const getBookingsByTenant = async (req, res) => {
+    try {
+        const { tenantId } = req.params;
+
+        if (!tenantId) {
+            return res.status(400).json({ error: true, message: "Tenant ID is required" });
+        }
+
+        const bookings = await Booking.find({ tenantId })
+            .populate('propertyId', 'propertyName image basePrice furnishingStatus')
+            .populate('landlordId', 'name');
+
+        res.status(200).json({ success: true, data: bookings });
+    } catch (error) {
+        res.status(500).json({ error: true, message: "Server error", details: error.message });
+    }
+};
+
+
+// Update booking status
+const updateBookingStatus = async (req, res) => {
+    try {
+        const { bookingId } = req.params;
+        const { status } = req.body;
+
+        if (!bookingId || !status) {
+            return res.status(400).json({ error: true, message: "Booking ID and status are required" });
+        }
+
+        const booking = await Booking.findByIdAndUpdate(
+            bookingId,
+            { status },
+            { new: true }
+        );
+
+        if (!booking) {
+            return res.status(404).json({ error: true, message: "Booking not found" });
+        }
+
+        res.status(200).json({ success: true, message: "Booking status updated", data: booking });
+    } catch (error) {
+        res.status(500).json({ error: true, message: "Server error", details: error.message });
+    }
+};
+
+// Delete a booking
+const deleteBooking = async (req, res) => {
+    try {
+        const { bookingId } = req.params;
+
+        if (!bookingId) {
+            return res.status(400).json({ error: true, message: "Booking ID is required" });
+        }
+
+        const booking = await Booking.findByIdAndDelete(bookingId);
+
+        if (!booking) {
+            return res.status(404).json({ error: true, message: "Booking not found" });
+        }
+
+        res.status(200).json({ success: true, message: "Booking deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ error: true, message: "Server error", details: error.message });
+    }
+};
 
 module.exports = {
     tenantLogin,
@@ -366,4 +461,8 @@ module.exports = {
     getFavorites,
     addFavorite,
     removeFavorite,
+    createBooking,
+    getBookingsByTenant,
+    updateBookingStatus,
+    deleteBooking,
 };

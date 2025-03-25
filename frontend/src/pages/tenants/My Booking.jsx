@@ -1,34 +1,30 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import BookingCard from '../../components/BookingCard';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import BookingCard from "../../components/BookingCard";
 
-function MyBookings() {
+export default function MyBookings() {
   const [bookings, setBookings] = useState([]);
+  const tenantId = localStorage.getItem("tenantId");
 
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        // TODO: Replace with actual tenant ID from auth context
-        const tenantId = "dummy-tenant-id";
-        const response = await axios.get(`http://localhost:5000/bookings/tenant/${tenantId}`);
+        const response = await axios.get(`http://localhost:5000/tenant/bookings/${tenantId}`);
+        
+
         setBookings(response.data.data);
       } catch (error) {
-        console.error('Error fetching bookings:', error);
+        console.error("Error fetching bookings:", error);
       }
     };
 
     fetchBookings();
-  }, []);
+  }, [tenantId]);
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-4">
-        {bookings.map((booking, index) => (
-          <BookingCard key={index} {...booking} />
-        ))}
-      </div>
+    <div className="space-y-6 p-8">
+      <h2 className="text-2xl font-semibold">My Bookings</h2>
+      <div className="space-y-4">{bookings.length > 0 ? bookings.map((booking) => <BookingCard key={booking._id} {...booking} />) : <p>No bookings found.</p>}</div>
     </div>
   );
 }
-
-export default MyBookings;

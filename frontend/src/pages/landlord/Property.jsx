@@ -66,10 +66,10 @@ const Property = () => {
 
   const filteredProperties = properties.filter(
     (property) =>
-      property.propertyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      property.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (property.stateId?.name &&
-        property.stateId.name.toLowerCase().includes(searchQuery.toLowerCase()))
+      property?.propertyName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      property?.address?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (property?.stateId?.name &&
+        property?.stateId?.name.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
 

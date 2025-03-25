@@ -2,6 +2,7 @@ const express = require("express")
 const router = express.Router()
 
 const tenantController = require('../controllers/tenantController')
+const { authenticateToken } = require("../utils/utilities")
 
 router.post("/signup",tenantController.tenantSignup)
 router.post("/login",tenantController.tenantLogin)
@@ -16,6 +17,11 @@ router.get("/properties",tenantController.getProperty)
 router.get("/favorites/:tenantId",tenantController.getFavorites)
 router.post("/favorites", tenantController.addFavorite);
 router.delete("/favorites/:tenantId/:propertyId", tenantController.removeFavorite)
+
+router.post("/bookings", authenticateToken("landlord"), tenantController.createBooking);
+router.get("/bookings/tenant/:tenantId", tenantController.getBookingsByTenant);
+router.put("/bookings/:bookingId", tenantController.updateBookingStatus);
+router.delete("/bookings/:bookingId", tenantController.deleteBooking);
 
 
 module.exports = router

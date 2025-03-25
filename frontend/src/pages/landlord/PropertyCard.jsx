@@ -16,12 +16,12 @@ const PropertyCard = ({ property, onEdit, onDelete,onClick }) => {
   <div
   className="flex items-center p-4 rounded-lg shadow-sm border hover:shadow-md transition-shadow cursor-pointer"
   style={{ backgroundColor: "#FFFCF6", borderColor: "#EEE7DB" }}
-  onClick={onClick} // Open details on click
+  // Open details on click
 >
   
    
      {/* Property Image */}
-      <div className="w-24 h-24 mr-4 flex-shrink-0">
+      <div className="w-24 h-24 mr-4 flex-shrink-0"  onClick={onClick}>
         <img
           src={getImageUrl()}
           alt={property.propertyName || "Property"}
