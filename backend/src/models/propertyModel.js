@@ -36,7 +36,7 @@ const PropertySchema = new Schema({
     },
     landlordId: {
         type: Schema.Types.ObjectId,
-        ref: "landlord",
+        ref: "Landlord",
     },
     description: {
         type: String,

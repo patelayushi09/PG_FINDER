@@ -5,7 +5,7 @@ const BookingSchema = new Schema(
   {
     tenantId: {
       type: Schema.Types.ObjectId,
-      ref: "tenant",
+      ref: "Tenant",
       required: true,
     },
     propertyId: {
@@ -15,7 +15,7 @@ const BookingSchema = new Schema(
     },
     landlordId: {
       type: Schema.Types.ObjectId,
-      ref: "landlord",
+      ref: "Landlord",
       required: true,
     },
     checkInDate: {

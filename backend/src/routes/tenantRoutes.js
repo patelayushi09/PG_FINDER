@@ -13,5 +13,9 @@ router.post("/change-password", tenantController.changePassword)
 
 router.get("/properties",tenantController.getProperty)
 
+router.get("/favorites/:tenantId",tenantController.getFavorites)
+router.post("/favorites", tenantController.addFavorite);
+router.delete("/favorites/:tenantId/:propertyId", tenantController.removeFavorite)
+
 
 module.exports = router

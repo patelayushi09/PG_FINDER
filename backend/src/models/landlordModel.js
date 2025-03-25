@@ -37,4 +37,4 @@ const LandlordSchema = new Schema({
     }
 });
 
-module.exports = mongoose.model("landlord", LandlordSchema)
+module.exports = mongoose.model("Landlord", LandlordSchema)

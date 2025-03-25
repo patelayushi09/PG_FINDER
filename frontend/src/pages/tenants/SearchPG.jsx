@@ -2,33 +2,55 @@ import React, { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import axios from 'axios';
 import PropertyCard from '../../components/PropertyCard';
-import PropertyFilter from '../admin/PropertyFilter'
+import PropertyFilter from '../admin/PropertyFilter';
 
 function SearchPG() {
   const [searchTerm, setSearchTerm] = useState('');
   const [properties, setProperties] = useState([]);
+  const [favoriteIds, setFavoriteIds] = useState(new Set());
 
   // Filter states
   const [furnishingFilter, setFurnishingFilter] = useState("");
-  const [availabilityFilter, setAvailabilityFilter] = useState(""); // Declare availabilityFilter state
-  const [rentFilter, setRentFilter] = useState("");
+  const [availabilityFilter, setAvailabilityFilter] = useState("");
+  
+
+  const fetchFavorites = async () => {
+    try {
+      const tenantId = localStorage.getItem('tenantId');
+      if (!tenantId) return;
+
+      const response = await axios.get(`http://localhost:5000/tenant/favorites/${tenantId}`);
+      const favorites = response.data.data || [];
+      const favoriteIdSet = new Set(favorites.map(fav => fav._id || fav.id));
+      setFavoriteIds(favoriteIdSet);
+    } catch (error) {
+      console.error('Error fetching favorites:', error);
+    }
+  };
+
+  const fetchProperties = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/tenant/properties');
+      setProperties(response.data.data);
+    } catch (error) {
+      console.error('Error fetching properties:', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchProperties = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/tenant/properties'); // Fetch all PGs
-        setProperties(response.data.data);
-      } catch (error) {
-        console.error('Error fetching properties:', error);
-      }
-    };
-
     fetchProperties();
+    fetchFavorites();
   }, []);
 
-  // Filter properties based on search term, availability, and furnishing status
+  // Filter properties based on search term, availability, furnishing status, and favorites
   const filteredProperties = properties.filter(property => {
     const lowerSearch = searchTerm.toLowerCase();
+    const propertyId = property._id || property.id;
+
+    // Exclude favorited properties
+    if (favoriteIds.has(propertyId)) {
+      return false;
+    }
 
     // Check search term (property name, city, state)
     const matchesSearch =
@@ -43,6 +65,10 @@ function SearchPG() {
       (availabilityFilter ? property.availabilityStatus === availabilityFilter : true)
     );
   });
+
+  const handleFavoriteUpdate = () => {
+    fetchFavorites();
+  };
 
   return (
     <div className="space-y-6 p-8 bg-cream/10 min-h-screen flex-1">
@@ -60,16 +86,11 @@ function SearchPG() {
           />
         </div>
 
-        {/*  */}
-
-        
-
         {/* Filter Button & Dropdown */}
-        
         <PropertyFilter
           onApplyFilter={(furnishing, availability) => {
             setFurnishingFilter(furnishing);
-            setAvailabilityFilter(availability); // Update availability filter
+            setAvailabilityFilter(availability);
           }}
         />
       </div>
@@ -77,8 +98,13 @@ function SearchPG() {
       {/* Property List */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredProperties.length > 0 ? (
-          filteredProperties.map((property, index) => (
-            <PropertyCard key={index} {...property} />
+          filteredProperties.map((property) => (
+            <PropertyCard 
+              key={property._id || property.id}
+              {...property}
+              isFavorited={false}
+              onFavorite={handleFavoriteUpdate}
+            />
           ))
         ) : (
           <p className="text-gray-500 text-center col-span-3">No properties found.</p>

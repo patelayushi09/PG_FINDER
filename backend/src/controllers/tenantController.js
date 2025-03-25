@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken')
 const nodemailer = require('nodemailer');
 const otpModel = require('../models/otpModel');
 const Property = require('../models/propertyModel')
+const Favorite = require('../models/favoriteModel')
 require('dotenv').config()
 
 // Tenant signup
@@ -38,7 +39,7 @@ const tenantSignup = async (req, res) => {
         });
 
         await newTenant.save();
-        
+
         // Send Welcome Email
         await sendWelcomeEmail(email, firstName);
 
@@ -240,15 +241,119 @@ const sendWelcomeEmail = async (email, firstName) => {
 
 
 //Get all PG listings
-const getProperty =async(req,res)=>{
+const getProperty = async (req, res) => {
     try {
-        const properties = await Property.find().populate("stateId").populate("cityId"); // Fetch all properties from DB
+        const properties = await Property.find()
+            .populate("cityId", "name")   // Populate city name
+            .populate("stateId", "name"); // Populate state name
+
         res.status(200).json({ success: true, data: properties });
-      } catch (error) {
-        console.error('Error fetching properties:', error);
-        res.status(500).json({ success: false, message: 'Server error' });
-      }
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Server error", error });
+    }
 }
+
+// Get Favorites
+const getFavorites = async (req, res) => {
+    const { tenantId } = req.params;
+
+    try {
+        const favorites = await Favorite.find({ tenantId }).populate({
+            path: 'propertyId',
+            populate: [
+                { path: 'cityId', select: 'name' },  // Change "cityName" to "name"
+                { path: 'stateId', select: 'name' }  // Change "stateName" to "name"
+            ]
+        });
+
+        const properties = favorites
+            .filter(fav => fav.propertyId) // Ensure propertyId exists
+            .map((fav) => ({
+                id: fav.propertyId._id.toString(),
+                image: fav.propertyId.image || "/default-image.jpg",
+                propertyName: fav.propertyId.propertyName,
+                basePrice: fav.propertyId.basePrice,
+                furnishingStatus: fav.propertyId.furnishingStatus,
+                rating: fav.propertyId.rating,
+                city: fav.propertyId.cityId?.name || "Unknown",  
+                state: fav.propertyId.stateId?.name || "Unknown", 
+            }));
+
+        res.status(200).json({ success: true, data: properties });
+
+    } catch (error) {
+        console.error('Error fetching favorites:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+;
+
+
+// Add Favorite
+const addFavorite = async (req, res) => {
+    const { tenantId, propertyId } = req.body
+
+    console.log("Request body:", req.body) // Log the request body for debugging
+
+    if (!tenantId || !propertyId) {
+        return res.status(400).json({
+            success: false,
+            message: "Missing tenantId or propertyId",
+            received: { tenantId, propertyId },
+        })
+    }
+
+    try {
+        // Check if the property exists
+        const propertyExists = await Property.findById(propertyId)
+        if (!propertyExists) {
+            return res.status(404).json({ success: false, message: "Property not found" })
+        }
+
+        // Check if already favorited
+        const existingFavorite = await Favorite.findOne({ tenantId, propertyId })
+        if (existingFavorite) {
+            return res.status(409).json({ success: false, message: "Property already favorited" })
+        }
+
+        // Add favorite
+        const newFavorite = new Favorite({ tenantId, propertyId })
+        await newFavorite.save()
+
+        res.status(201).json({ success: true, message: "Property added to favorites" })
+    } catch (error) {
+        console.error("Error adding favorite:", error)
+        res.status(500).json({
+            success: false,
+            message: "Server error",
+            error: error.message,
+        })
+    }
+}
+
+// Remove Favorite
+const removeFavorite = async (req, res) => {
+    const { tenantId, propertyId } = req.params
+
+    if (!tenantId || !propertyId) {
+        return res.status(400).json({ success: false, message: "Missing tenantId or propertyId" })
+    }
+
+    try {
+        // Find and remove the favorite
+        const result = await Favorite.findOneAndDelete({ tenantId, propertyId })
+
+        if (!result) {
+            return res.status(404).json({ success: false, message: "Favorite not found" })
+        }
+
+        res.status(200).json({ success: true, message: "Property removed from favorites" })
+    } catch (error) {
+        console.error("Error removing favorite:", error)
+        res.status(500).json({ success: false, message: "Server error" })
+    }
+}
+
 
 
 module.exports = {
@@ -257,5 +362,8 @@ module.exports = {
     sendOTP,
     validateOTP,
     changePassword,
-    getProperty
+    getProperty,
+    getFavorites,
+    addFavorite,
+    removeFavorite,
 };
