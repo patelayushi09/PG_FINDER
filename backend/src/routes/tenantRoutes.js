@@ -18,8 +18,8 @@ router.get("/favorites/:tenantId",tenantController.getFavorites)
 router.post("/favorites", tenantController.addFavorite);
 router.delete("/favorites/:tenantId/:propertyId", tenantController.removeFavorite)
 
-router.post("/bookings", authenticateToken("landlord"), tenantController.createBooking);
-router.get("/bookings/tenant/:tenantId", tenantController.getBookingsByTenant);
+router.post("/bookings", authenticateToken("tenant"), tenantController.createBooking);
+router.get("/bookings/:tenantId", tenantController.getBookingsByTenant);
 router.put("/bookings/:bookingId", tenantController.updateBookingStatus);
 router.delete("/bookings/:bookingId", tenantController.deleteBooking);
 

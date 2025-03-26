@@ -9,9 +9,9 @@ export default function MyBookings() {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/tenant/bookings/${tenantId}`);
-        
+        const response = await axios.get(`http://localhost:5000/tenant/bookings/${tenantId}`)
 
+console.log(response.data)
         setBookings(response.data.data);
       } catch (error) {
         console.error("Error fetching bookings:", error);
@@ -22,7 +22,7 @@ export default function MyBookings() {
   }, [tenantId]);
 
   return (
-    <div className="space-y-6 p-8">
+    <div className="space-y-6 p-8 bg-cream/10 min-h-screen flex-1">
       <h2 className="text-2xl font-semibold">My Bookings</h2>
       <div className="space-y-4">{bookings.length > 0 ? bookings.map((booking) => <BookingCard key={booking._id} {...booking} />) : <p>No bookings found.</p>}</div>
     </div>

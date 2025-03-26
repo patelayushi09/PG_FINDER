@@ -11,7 +11,7 @@ export default function CreateBooking({ propertyId, propertyName, price = 0, lan
   const [totalAmount, setTotalAmount] = useState(0);
 
   const tenantId = localStorage.getItem("tenantId");
-  const token = localStorage.getItem("token");
+ 
 
   useEffect(() => {
     if (!checkInDate || !checkOutDate || isNaN(price) || price <= 0) {

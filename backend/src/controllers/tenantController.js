@@ -359,7 +359,7 @@ const removeFavorite = async (req, res) => {
 const createBooking = async (req, res) => {
     try {
         console.log(req.user)
-        const { tenantId, propertyId, checkInDate, checkOutDate, totalAmount } = req.body;
+        const { tenantId, propertyId, landlordId, checkInDate, checkOutDate, totalAmount } = req.body;
 
         // if (!tenantId || !propertyId || !landlordId || !checkInDate || !checkOutDate || !totalAmount) {
         //     return res.status(400).json({ error: true, message: "All fields are required" });
@@ -368,7 +368,7 @@ const createBooking = async (req, res) => {
         const newBooking = new Booking({
             tenantId,
             propertyId,
-            landlordId: req.user.landlordId,
+            landlordId,
             checkInDate,
             checkOutDate,
             totalAmount,
@@ -394,7 +394,14 @@ const getBookingsByTenant = async (req, res) => {
         }
 
         const bookings = await Booking.find({ tenantId })
-            .populate('propertyId', 'propertyName image basePrice furnishingStatus')
+            .populate({
+                path: 'propertyId',
+                select: 'propertyName image basePrice furnishingStatus cityId',
+                populate: {
+                    path: 'cityId',  // This will populate cityId with actual city data
+                    select: 'name'   // Fetch only the city name
+                }
+            })
             .populate('landlordId', 'name');
 
         res.status(200).json({ success: true, data: bookings });
