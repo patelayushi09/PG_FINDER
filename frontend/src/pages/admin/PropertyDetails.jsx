@@ -22,6 +22,15 @@ const PropertyDetails = ({ property, onClose }) => {
             <strong>Area:</strong> {property.areaId?.name || "Unknown Area"}
           </p>
           <p>
+            <strong>Owner:</strong> {property.landlordId && property.landlordId.name ? property.landlordId.name : "NA"}
+          </p>
+          <p>
+            <strong>Owner Email:</strong> {property.landlordId && property.landlordId.email ? property.landlordId.email : "NA"}
+          </p>
+          <p>
+            <strong>Owner Phone No:</strong> {property.landlordId && property.landlordId.phoneno ? property.landlordId.phoneno : "NA"}
+          </p>
+          <p>
             <strong>Base Price:</strong>{" "}
             {property.basePrice ? `₹${property.basePrice}` : "Not Available"}
           </p>

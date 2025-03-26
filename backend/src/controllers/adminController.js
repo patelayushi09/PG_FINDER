@@ -346,12 +346,19 @@ const addProperty = async (req, res) => {
 // Get All Properties
 const getProperties = async (req, res) => {
     try {
-        const properties = await Property.find().populate("cityId").populate("areaId");
-        res.json(properties);
+        const properties = await Property.find()
+            .populate("cityId")
+            .populate("areaId")
+            .populate("stateId")
+            .populate("landlordId", "name email phoneno"); 
+
+        res.json({ success: true, data: properties });
     } catch (error) {
+        console.error("Error fetching properties:", error);
         res.status(500).json({ success: false, message: "Error fetching properties", error });
     }
 };
+
 
 // Get Property by ID
 const getPropertyById = async (req, res) => {

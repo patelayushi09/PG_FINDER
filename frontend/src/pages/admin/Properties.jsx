@@ -10,7 +10,7 @@ const API_URL = "http://localhost:5000/admin/properties";
 
 const Properties = () => {
   const [showForm, setShowForm] = useState(false);
-  const [properties, setProperties] = useState([]);
+  const [properties, setProperties] = useState([]); // Always initialize as an array
   const [updateProperty, setUpdateProperty] = useState(null);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -23,10 +23,20 @@ const Properties = () => {
     const fetchProperties = async () => {
       try {
         const response = await axios.get(API_URL);
-        setProperties(response.data);
+        console.log("API Response:", response.data); // Debugging log
+
+        // Ensure data is an array
+        if (Array.isArray(response.data)) {
+          setProperties(response.data);
+        } else if (response.data && Array.isArray(response.data.data)) {
+          setProperties(response.data.data);
+        } else {
+          console.error("Unexpected API response format", response.data);
+          setProperties([]); // Fallback to an empty array
+        }
       } catch (error) {
         console.error("Error fetching properties:", error);
-        setProperties([]);
+        setProperties([]); // Ensure it's always an array
       } finally {
         setLoading(false);
       }
@@ -54,12 +64,14 @@ const Properties = () => {
   };
 
   // Apply Filters
-  const filteredProperties = properties.filter((property) => {
-    return (
-      (furnishingFilter ? property.furnishingStatus === furnishingFilter : true) &&
-      (rentFilter ? property.availabilityStatus === rentFilter : true)
-    );
-  });
+  const filteredProperties = Array.isArray(properties)
+    ? properties.filter((property) => {
+        return (
+          (furnishingFilter ? property.furnishingStatus === furnishingFilter : true) &&
+          (rentFilter ? property.availabilityStatus === rentFilter : true)
+        );
+      })
+    : [];
 
   return (
     <div className="space-y-6 p-8 bg-cream/10 min-h-screen flex-1 ml-64">
@@ -109,7 +121,7 @@ const Properties = () => {
         <UpdatePropertyForm
           property={updateProperty}
           onClose={() => setUpdateProperty(null)}
-          onPropertyUpdated={handlePropertyUpdated} // Pass the function here
+          onPropertyUpdated={handlePropertyUpdated}
         />
       )}
 
@@ -124,6 +136,19 @@ const PropertyCard = ({ property, onDelete, onUpdate, onViewDetails }) => {
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm relative">
+      {/* Property Image */}
+      {property.image ? (
+        <img
+          src={property.image}
+          alt={property.propertyName}
+          className="w-full h-40 object-cover rounded-lg mb-4"
+        />
+      ) : (
+        <div className="w-full h-40 bg-gray-200 flex items-center justify-center rounded-lg mb-4">
+          <span className="text-gray-500">No Image Available</span>
+        </div>
+      )}
+
       <div className="flex justify-between items-start mb-4">
         <div>
           <h3 className="text-lg font-semibold text-[#103538]">{property.propertyName}</h3>
