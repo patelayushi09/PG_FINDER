@@ -2,6 +2,7 @@ const express = require("express")
 const router = express.Router()
 
 const adminController = require('../controllers/adminController')
+const { authenticateToken } = require("../utils/utilities")
 
 router.post("/login", adminController.adminLogin)
 
@@ -22,7 +23,9 @@ router.get("/properties",adminController.getProperties)
 router.delete("/properties/:id",adminController.deleteProperty)
 router.put("/properties/:id",adminController.updateProperty)
 router.get("/properties/:id",adminController.getPropertyById)
-router.post("/properties",adminController.addProperty)
+router.post("/properties",authenticateToken("landlord"),adminController.addProperty)
+
+router.get("/landlords", adminController.getLandlords);
 
 // router.get("/dashboard", adminController.getDashboard)
 

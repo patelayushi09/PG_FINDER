@@ -330,18 +330,46 @@ const addUser = async (req, res) => {
 
 // Add Property
 const addProperty = async (req, res) => {
+  
     try {
-        const propertyData = req.body;
+       
+        const { title, propertyName, address, stateId, cityId, areaId, bedrooms, bathrooms, rating, description, basePrice, furnishingStatus, availabilityStatus, image } = req.body;
 
-        const newProperty = new Property(propertyData);
+        if (!req.user.landlordId) {
+            return res.status(403).json({ error: true, message: "Unauthorized - landlordId missing" });
+        }
+
+        const newProperty = new Property({
+            title,
+            propertyName,
+            landlordId: req.user.landlordId, // Ensure this is available
+            address,
+            stateId,
+            cityId,
+            areaId,
+            bedrooms,
+            bathrooms,
+            rating,
+            description,
+            basePrice,
+            furnishingStatus,
+            availabilityStatus,
+            image,
+        });
+
         await newProperty.save();
+        res.status(201).json({ success: true, message: "Property added successfully", data: newProperty });
 
-        return res.status(201).json({ message: "Property added successfully", property: newProperty });
     } catch (error) {
         console.error("Error adding property:", error);
-        return res.status(500).json({ error: "Internal Server Error", details: error.message });
+        return res.status(500).json({
+            success: false,
+            error: "Internal Server Error",
+            details: error.message,
+        });
     }
 };
+
 
 // Get All Properties
 const getProperties = async (req, res) => {
@@ -420,6 +448,27 @@ const deleteProperty = async (req, res) => {
 };
 
 
+// Get All Landlords
+const getLandlords = async (req, res) => {
+    try {
+        const landlords = await Landlord.find()
+            .select('_id name email phoneno')
+            .sort({ name: 1 });
+
+        res.json({ 
+            success: true, 
+            message: "Landlords fetched successfully",
+            data: landlords 
+        });
+    } catch (error) {
+        console.error("Error fetching landlords:", error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Error fetching landlords", 
+            error: error.message 
+        });
+    }
+};
 
 
 module.exports = {
@@ -437,4 +486,6 @@ module.exports = {
     getPropertyById,
     updateProperty,
     deleteProperty,
+    getLandlords,
+
 }
