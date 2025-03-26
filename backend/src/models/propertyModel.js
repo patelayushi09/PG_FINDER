@@ -62,7 +62,12 @@ const PropertySchema = new Schema({
     image: {
         type: String,
     },
-   
+    rating: {
+        type: Number,
+        min: 0,
+        max: 5,
+        default: 0
+    },
 });
 
 module.exports = mongoose.model('Property', PropertySchema)

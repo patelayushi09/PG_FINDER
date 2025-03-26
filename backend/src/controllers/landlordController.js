@@ -240,14 +240,39 @@ const sendWelcomeEmail = async (email, firstName) => {
 
 // Add Property
 const addProperty = async (req, res) => {
+    if (!req.user || req.user.role !== "landlord") {
+        return res.status(403).json({ error: true, message: "Unauthorized - Invalid Role in Route" });
+    }
     try {
-        const propertyData = req.body;
-        console.log(req.body)
-        const newProperty = new Property(propertyData);
+        
+
+        const { title, propertyName, address, stateId, cityId, areaId, bedrooms, bathrooms, rating, description, basePrice, furnishingStatus, availabilityStatus, image } = req.body;
+
+        if (!req.user.landlordId) {
+            return res.status(403).json({ error: true, message: "Unauthorized - landlordId missing" });
+        }
+
+        const newProperty = new Property({
+            title,
+            propertyName,
+            landlordId: req.user.landlordId, // Ensure this is available
+            address,
+            stateId,
+            cityId,
+            areaId,
+            bedrooms,
+            bathrooms,
+            rating,
+            description,
+            basePrice,
+            furnishingStatus,
+            availabilityStatus,
+            image,
+        });
+
         await newProperty.save();
-        console.log(newProperty)
-        return res.status(201).json({ message: "Property added successfully", property: newProperty });
-       
+        res.status(201).json({ success: true, message: "Property added successfully", data: newProperty });
+
     } catch (error) {
         console.error("Error adding property:", error);
         return res.status(500).json({ error: "Internal Server Error", details: error.message });
@@ -257,13 +282,25 @@ const addProperty = async (req, res) => {
 // Get All Properties
 const getProperties = async (req, res) => {
     try {
-        console.log(req.user)
-        const properties = await Property.find().populate("stateId").populate("cityId").populate("areaId");
-        res.json(properties, req.user.landlordId);
+        
+
+        if (!req.user.landlordId) {
+            return res.status(403).json({ success: false, message: "Unauthorized - landlordId missing" });
+        }
+
+        // Fetch properties belonging to the logged-in landlord
+        const properties = await Property.find({ landlordId: req.user.landlordId })
+            .populate("stateId")
+            .populate("cityId")
+            .populate("areaId");
+
+        res.json({ success: true, data: properties });
     } catch (error) {
+        console.error("Error fetching properties:", error);
         res.status(500).json({ success: false, message: "Error fetching properties", error });
     }
 };
+
 
 // Get Property by ID
 const getPropertyById = async (req, res) => {

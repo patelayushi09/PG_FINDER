@@ -1,3 +1,6 @@
+
+
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
@@ -9,6 +12,7 @@ const UpdatePropertyForm = ({ property, onClose, onPropertyUpdated }) => {
   const [areas, setAreas] = useState([]);
   const [selectedState, setSelectedState] = useState(property?.stateId || "");
   const [selectedCity, setSelectedCity] = useState(property?.cityId || "");
+  const [selectedArea, setSelectedArea] = useState(property?.areaId || "");
 
   // Fetch all states
   useEffect(() => {
@@ -42,7 +46,7 @@ const UpdatePropertyForm = ({ property, onClose, onPropertyUpdated }) => {
 
   // Fetch areas when selectedCity changes
   useEffect(() => {
-    if (!selectedCity) {
+    if (!selectedCity || typeof selectedCity !== "string") {
       setAreas([]);
       return;
     }
@@ -60,7 +64,23 @@ const UpdatePropertyForm = ({ property, onClose, onPropertyUpdated }) => {
   // Pre-fill form with existing property details
   useEffect(() => {
     if (property) {
-      Object.keys(property).forEach((key) => setValue(key, property[key]));
+      // Set form values
+      setValue("title", property.title);
+      setValue("propertyName", property.propertyName);
+      setValue("address", property.address);
+      setValue("basePrice", property.basePrice);
+      setValue("description", property.description);
+      setValue("furnishingStatus", property.furnishingStatus);
+      setValue("availabilityStatus", property.availabilityStatus);
+
+      // Set location values
+      setSelectedState(property.stateId);
+      setSelectedCity(property.cityId);
+      setSelectedArea(property.areaId);
+
+      setValue("stateId", property.stateId);
+      setValue("cityId", property.cityId);
+      setValue("areaId", property.areaId);
     }
   }, [property, setValue]);
 
@@ -71,6 +91,7 @@ const UpdatePropertyForm = ({ property, onClose, onPropertyUpdated }) => {
         ...data,
         stateId: selectedState,
         cityId: selectedCity,
+        areaId: selectedArea,
       };
       const res = await axios.put(`http://localhost:5000/landlord/properties/${property._id}`, updatedData);
       onPropertyUpdated(res.data); // Call onPropertyUpdated with updated property data
@@ -86,33 +107,12 @@ const UpdatePropertyForm = ({ property, onClose, onPropertyUpdated }) => {
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-xl font-bold mb-4">Update Property</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <input
-            type="text"
-            placeholder="Title"
-            className="w-full p-2 border rounded"
-            {...register("title", { required: true })}
-          />
-          <input
-            type="text"
-            placeholder="Property Name"
-            className="w-full p-2 border rounded"
-            {...register("propertyName", { required: true })}
-          />
-          <input
-            type="text"
-            placeholder="Address"
-            className="w-full p-2 border rounded"
-            {...register("address", { required: true })}
-          />
-           
+          <input type="text" placeholder="Title" className="w-full p-2 border rounded" {...register("title", { required: true })} />
+          <input type="text" placeholder="Property Name" className="w-full p-2 border rounded" {...register("propertyName", { required: true })} />
+          <input type="text" placeholder="Address" className="w-full p-2 border rounded" {...register("address", { required: true })} />
 
           {/* State Dropdown */}
-          <select
-            className="w-full p-2 border rounded"
-            {...register("stateId", { required: true })}
-            value={selectedState}
-            onChange={(e) => setSelectedState(e.target.value)}
-          >
+          <select className="w-full p-2 border rounded" value={selectedState} onChange={(e) => setSelectedState(e.target.value)}>
             <option value="">Select State</option>
             {states.map((state) => (
               <option key={state._id} value={state._id}>
@@ -122,13 +122,7 @@ const UpdatePropertyForm = ({ property, onClose, onPropertyUpdated }) => {
           </select>
 
           {/* City Dropdown */}
-          <select
-            className="w-full p-2 border rounded"
-            {...register("cityId", { required: true })}
-            value={selectedCity}
-            onChange={(e) => setSelectedCity(e.target.value)}
-            disabled={!selectedState}
-          >
+          <select className="w-full p-2 border rounded" value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)} disabled={!selectedState}>
             <option value="">Select City</option>
             {cities.map((city) => (
               <option key={city._id} value={city._id}>
@@ -138,11 +132,7 @@ const UpdatePropertyForm = ({ property, onClose, onPropertyUpdated }) => {
           </select>
 
           {/* Area Dropdown */}
-          <select
-            className="w-full p-2 border rounded"
-            {...register("areaId", { required: true })}
-            disabled={!selectedCity}
-          >
+          <select className="w-full p-2 border rounded" value={selectedArea} onChange={(e) => setSelectedArea(e.target.value)} disabled={!selectedCity}>
             <option value="">Select Area</option>
             {areas.map((area) => (
               <option key={area._id} value={area._id}>
@@ -151,23 +141,11 @@ const UpdatePropertyForm = ({ property, onClose, onPropertyUpdated }) => {
             ))}
           </select>
 
-          <input
-            type="number"
-            placeholder="Base Price"
-            className="w-full p-2 border rounded"
-            {...register("basePrice", { required: true })}
-          />
-          <textarea
-            placeholder="Description"
-            className="w-full p-2 border rounded"
-            {...register("description", { required: true })}
-          ></textarea>
+          <input type="number" placeholder="Base Price" className="w-full p-2 border rounded" {...register("basePrice", { required: true })} />
+          <textarea placeholder="Description" className="w-full p-2 border rounded" {...register("description", { required: true })}></textarea>
 
           {/* Furnishing Status Dropdown */}
-          <select
-            className="w-full p-2 border rounded"
-            {...register("furnishingStatus", { required: true })}
-          >
+          <select className="w-full p-2 border rounded" {...register("furnishingStatus", { required: true })}>
             <option value="">Select Furnishing Status</option>
             <option value="Furnished">Furnished</option>
             <option value="Unfurnished">Unfurnished</option>
@@ -175,10 +153,7 @@ const UpdatePropertyForm = ({ property, onClose, onPropertyUpdated }) => {
           </select>
 
           {/* Availability Status Dropdown */}
-          <select
-            className="w-full p-2 border rounded"
-            {...register("availabilityStatus", { required: true })}
-          >
+          <select className="w-full p-2 border rounded" {...register("availabilityStatus", { required: true })}>
             <option value="">Select Status</option>
             <option value="Available">Available</option>
             <option value="Rented">Rented</option>
@@ -199,3 +174,5 @@ const UpdatePropertyForm = ({ property, onClose, onPropertyUpdated }) => {
 };
 
 export default UpdatePropertyForm;
+
+

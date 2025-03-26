@@ -59,9 +59,9 @@ const PropertyCard = ({ property, onEdit, onDelete,onClick }) => {
         {/* Occupancy & Revenue */}
         <div className="flex mt-2 text-sm">
           <div className="mr-6">
-            <span style={{ color: "#759B87" }}>Occupancy</span> 
+            <span style={{ color: "#759B87" }}>Rating</span> 
             <div className="font-medium" style={{ color: "#D96851" }}>
-              {property.occupancy || 0}%
+              {property.rating}
             </div>
           </div>
 

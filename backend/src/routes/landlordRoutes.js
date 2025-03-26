@@ -19,11 +19,11 @@ router.post("/forgot-password/otp", landlordController.validateOTP)
 router.post("/change-password", landlordController.changePassword)
 
 
-router.get("/properties", authenticateToken,landlordController.getProperties)
+router.get("/properties", authenticateToken("landlord"), landlordController.getProperties);
 router.delete("/properties/:id",landlordController.deleteProperty)
 router.put("/properties/:id",landlordController.updateProperty)
 router.get("/properties/:id",landlordController.getPropertyById)
-router.post("/properties", upload.single("image"), landlordController.addProperty);
+router.post("/properties", authenticateToken("landlord"),upload.single("image"), landlordController.addProperty);
 
 
 

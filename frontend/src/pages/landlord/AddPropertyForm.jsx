@@ -14,7 +14,6 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
   const [selectedArea, setSelectedArea] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [occupancy, setOccupancy] = useState(0);
   const [key, setKey] = useState('');
   const [image, setImage] = useState('');
   const [imageError, setImageError] = useState('');
@@ -55,11 +54,21 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
 
 
 
+
+
+
   const handleFileChange = (fileList) => {
     if (fileList && fileList.allEntries.length > 0) {
       const fileInfo = fileList.allEntries[0];
-      setImage(fileInfo.cdnUrl);
-      setImageError(''); // Clear image error if a file is uploaded
+
+      console.log("🔹 File Info:", fileInfo); // Debugging log
+
+      if (fileInfo.cdnUrl) {
+        setImage(fileInfo.cdnUrl);  // Save URL to state
+        setImageError("");  // Clear error
+      } else {
+        setImageError("Image upload failed. Please try again.");
+      }
     }
   };
 
@@ -73,17 +82,28 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
     formData.append("stateId", selectedState);
     formData.append("cityId", selectedCity);
     formData.append("areaId", selectedArea);
-    formData.append("occupancy", occupancy.toString());
+   
 
+    // Ensure the image URL is included in the payload
     if (image) {
-      formData.append("image", image);
+      formData.append("image", image);  // ✅ Sending image URL instead of file
+    } else {
+      setImageError("Please upload an image before submitting.");
+      setIsSubmitting(false);
+      return;
     }
+
+    const token = localStorage.getItem("accessToken");
 
     try {
       const res = await axios.post("http://localhost:5000/landlord/properties", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
       });
 
+      console.log("🔹 Response from server:", res.data);
       onPropertyAdded && onPropertyAdded(res.data);
       reset();
       onClose();
@@ -93,6 +113,9 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
       setIsSubmitting(false);
     }
   };
+
+
+
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -135,24 +158,21 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
 
           {/* Property Details */}
           <input type="number" placeholder="Base Price" className="w-full p-2 border rounded" {...register("basePrice", { required: true })} />
-          <input type="number" placeholder="Rating " className="w-full p-2 border rounded" {...register("rating", { required: true })} />
+          <input
+            type="number"
+            step="0.1"
+            min="0"
+            max="5"
+            placeholder="Rating (e.g., 4.5)"
+            className="w-full p-2 border rounded"
+            {...register("rating", { required: true, valueAsNumber: true })}
+          />
+
           <input type="number" placeholder="Bedrooms" className="w-full p-2 border rounded" {...register("bedrooms", { required: true })} />
           <input type="number" placeholder="Bathrooms" className="w-full p-2 border rounded" {...register("bathrooms", { required: true })} />
           <textarea placeholder="Description" className="w-full p-2 border rounded" {...register("description", { required: true })}></textarea>
 
-          {/* Occupancy */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">Occupancy (%)</label>
-            <input
-              type="number"
-              placeholder="Occupancy"
-              className="w-full p-2 border rounded"
-              value={occupancy}
-              onChange={(e) => setOccupancy(Number.parseInt(e.target.value) || 0)}
-              min="0"
-              max="100"
-            />
-          </div>
+          
 
           {/* Furnishing & Availability */}
           <select className="w-full p-2 border rounded" {...register("furnishingStatus", { required: true })}>
