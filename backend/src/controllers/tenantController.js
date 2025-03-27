@@ -421,7 +421,7 @@ const getBookingsByTenant = async (req, res) => {
                     select: 'name'   // Fetch only the city name
                 }
             })
-            .populate('landlordId', 'name');
+            .populate('landlordId', 'name phoneno email');
 
         res.status(200).json({ success: true, data: bookings });
     } catch (error) {
