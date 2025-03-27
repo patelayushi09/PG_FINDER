@@ -477,6 +477,7 @@ const deleteBooking = async (req, res) => {
     }
 };
 
+
 module.exports = {
     tenantLogin,
     tenantSignup,

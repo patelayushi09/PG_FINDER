@@ -43,7 +43,6 @@ function Favorites() {
           email: property.landlord?.email || "NA",
           phoneno: property.landlord?.phoneno || "NA",
         },
-        title: property.title || "No Title",
         isFavorited: true,
       }));
 
@@ -81,6 +80,7 @@ function Favorites() {
                 isFavorited={true}
                 onFavorite={handleFavoriteUpdate}
                 onImageClick={() => handleImageClick(property)}
+                style={{ backgroundColor: "#FFFCF6", borderColor: "#EEE7DB" }}
               />
               <button
                 className="mt-2 bg-[#a0ccb4] text-white px-4 py-2 rounded-lg w-full"

@@ -53,7 +53,7 @@ function Dashboard() {
     
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="gspace-y-6 p-8 bg-cream/10 min-h-screen flex-1">
       <div className="lg:col-span-2 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
           <StatsCard 

@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken')
 const nodemailer = require('nodemailer');
 const otpModel = require('../models/otpModel');
 const Property = require('../models/propertyModel')
+const Booking = require('../models/bookingModel')
 require('dotenv').config()
 
 // Landlord signup
@@ -244,7 +245,7 @@ const addProperty = async (req, res) => {
         return res.status(403).json({ error: true, message: "Unauthorized - Invalid Role in Route" });
     }
     try {
-        
+
 
         const { title, propertyName, address, stateId, cityId, areaId, bedrooms, bathrooms, rating, description, basePrice, furnishingStatus, availabilityStatus, image } = req.body;
 
@@ -282,7 +283,7 @@ const addProperty = async (req, res) => {
 // Get All Properties
 const getProperties = async (req, res) => {
     try {
-        
+
 
         if (!req.user.landlordId) {
             return res.status(403).json({ success: false, message: "Unauthorized - landlordId missing" });
@@ -327,27 +328,27 @@ const getPropertyById = async (req, res) => {
 // Update Property
 const updateProperty = async (req, res) => {
     try {
-      const { id } = req.params; // Extract _id from URL
-      const updatedData = req.body;
-  
-      // Validate ID format
-      if (!id || id.length !== 24) {
-        return res.status(400).json({ error: "Invalid property ID" });
-      }
-  
-      // Find and update the property
-      const updatedProperty = await Property.findByIdAndUpdate(id, updatedData, { new: true });
-  
-      if (!updatedProperty) {
-        return res.status(404).json({ error: "Property not found" });
-      }
-  
-      res.status(200).json(updatedProperty);
+        const { id } = req.params; // Extract _id from URL
+        const updatedData = req.body;
+
+        // Validate ID format
+        if (!id || id.length !== 24) {
+            return res.status(400).json({ error: "Invalid property ID" });
+        }
+
+        // Find and update the property
+        const updatedProperty = await Property.findByIdAndUpdate(id, updatedData, { new: true });
+
+        if (!updatedProperty) {
+            return res.status(404).json({ error: "Property not found" });
+        }
+
+        res.status(200).json(updatedProperty);
     } catch (error) {
-      console.error("Error updating property:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+        console.error("Error updating property:", error);
+        res.status(500).json({ error: "Internal Server Error" });
     }
-  };
+};
 
 // Delete Property
 const deleteProperty = async (req, res) => {
@@ -367,6 +368,187 @@ const deleteProperty = async (req, res) => {
     }
 };
 
+// get bookings
+const getLandlordBookings = async (req, res) => {
+    try {
+        const { landlordId } = req.params;
+        console.log("Fetching bookings for landlord:", landlordId);
+
+        const bookings = await Booking.find({ landlordId }) // Fetch all bookings for this landlord
+            .populate('tenantId', 'firstName lastName email phoneno') // Get tenant details
+            .populate({
+                path: 'propertyId',
+                select: 'propertyName image basePrice cityId stateId',
+                populate: [
+                    { path: 'cityId', select: 'name' }, // Populate city name
+                    { path: 'stateId', select: 'name' } // Populate state name
+                ]
+            })
+            .populate('landlordId', 'name email phoneno'); // Get landlord details
+
+        if (!bookings.length) {
+            return res.status(404).json({
+                error: true,
+                message: 'No bookings found'
+            });
+        }
+
+        res.status(200).json({
+            error: false,
+            data: bookings
+        });
+
+    } catch (error) {
+        console.error('Error fetching bookings:', error);
+        res.status(500).json({
+            error: true,
+            message: 'Failed to fetch bookings'
+        });
+    }
+};
+
+// update booking status
+// const updateBookingStatus = async (req, res) => {
+//     try {
+//         console.log("Received request to update booking status");
+//         console.log("Params:", req.params);
+//         console.log("Body:", req.body);
+
+//         const { bookingId } = req.params;
+//         const { status } = req.body;
+
+//         if (!status) {
+//             return res.status(400).json({ error: true, message: "Status is required" });
+//         }
+
+//         const booking = await Booking.findById(bookingId)
+//             .populate("tenantId", "firstName lastName email")
+//             .populate("propertyId", "propertyName");
+
+//         if (!booking) {
+//             return res.status(404).json({ error: true, message: "Booking not found" });
+//         }
+
+//         console.log("Booking found:", booking);
+
+//         booking.status = status;
+//         await booking.save();
+
+//         console.log("Booking status updated:", booking.status);
+
+//         const tenantEmail = booking.tenantId?.email;
+//         const tenantName = `${booking.tenantId?.firstName || ""} ${booking.tenantId?.lastName || ""}`;
+//         const propertyName = booking.propertyId?.propertyName || "Unknown Property";
+
+//         console.log("Tenant Email:", tenantEmail);
+
+//         if (!tenantEmail) {
+//             console.warn("⚠️ No tenant email found! Skipping email sending.");
+//         } else {
+//             let subject, message;
+//             if (status === "confirmed") {
+//                 subject = "Booking Request Accepted ✅";
+//                 message = `Hello ${tenantName},\n\nYour booking request for "${propertyName}" has been accepted!\n\nThanks,\nPG Finder Team`;
+//             } else if (status === "rejected") {
+//                 subject = "Booking Request Rejected ❌";
+//                 message = `Hello ${tenantName},\n\nUnfortunately, your booking request for "${propertyName}" has been rejected.\n\nYou may try another property.\n\nPG Finder Team`;
+//             }
+
+//             console.log("Sending email with subject:", subject);
+
+//             if (subject && message) {
+//                 await sendEmail(tenantEmail, subject, message);
+//                 console.log("✅ Email sent successfully");
+//             }
+//         }
+
+//         res.status(200).json({ error: false, message: `Booking ${status} successfully` });
+//     } catch (error) {
+//         console.error("❌ Error updating booking status:", error);
+//         res.status(500).json({ error: true, message: "Failed to update booking status" });
+//     }
+// };
+const updateBookingStatus = async (req, res) => {
+    try {
+        console.log("📌 Received request to update booking status");
+        console.log("Params:", req.params);
+        console.log("Body:", req.body);
+
+        const { bookingId } = req.params;
+        const { status } = req.body;
+
+        if (!status) {
+            return res.status(400).json({ error: true, message: "Status is required" });
+        }
+
+        const booking = await Booking.findById(bookingId)
+            .populate("tenantId", "firstName lastName email")
+            .populate("propertyId", "propertyName");
+
+        if (!booking) {
+            return res.status(404).json({ error: true, message: "Booking not found" });
+        }
+
+        console.log("✅ Booking found:", booking);
+
+        booking.status = status;
+        await booking.save();
+
+        console.log("✅ Booking status updated:", booking.status);
+
+        const tenantEmail = booking.tenantId?.email;
+        const tenantName = `${booking.tenantId?.firstName || ""} ${booking.tenantId?.lastName || ""}`;
+        const propertyName = booking.propertyId?.propertyName || "Unknown Property";
+
+        console.log("📧 Tenant Email:", tenantEmail);
+
+        if (!tenantEmail) {
+            console.warn("⚠️ No tenant email found! Skipping email sending.");
+        } else {
+            // ✅ Setup Email Transporter inside the function
+            const transporter = nodemailer.createTransport({
+                service: "gmail",
+                auth: {
+                    user: process.env.EMAIL_USER,
+                    pass: process.env.PASS_KEY,
+                },
+            });
+
+            let subject, message;
+            if (status === "confirmed") {
+                subject = "Booking Request Accepted ✅";
+                message = `Hello ${tenantName},\n\nYour booking request for "${propertyName}" has been accepted!\n\nThanks,\nPG Finder Team`;
+            } else if (status === "rejected") {
+                subject = "Booking Request Rejected ❌";
+                message = `Hello ${tenantName},\n\nUnfortunately, your booking request for "${propertyName}" has been rejected.\n\nYou may try another property.\n\nPG Finder Team`;
+            }
+
+            console.log("📤 Sending email with subject:", subject);
+
+            if (subject && message) {
+                try {
+                    let info = await transporter.sendMail({
+                        from: process.env.EMAIL_USER,
+                        to: tenantEmail,
+                        subject,
+                        text: message,
+                    });
+
+                    console.log("✅ Email sent successfully:", info.messageId);
+                } catch (emailError) {
+                    console.error("❌ Error sending email:", emailError);
+                }
+            }
+        }
+
+        res.status(200).json({ error: false, message: `Booking ${status} successfully` });
+    } catch (error) {
+        console.error("❌ Error updating booking status:", error);
+        res.status(500).json({ error: true, message: "Failed to update booking status" });
+    }
+};
+
+
 module.exports = {
     landlordSignup,
     landlordLogin,
@@ -377,5 +559,7 @@ module.exports = {
     updateProperty,
     getPropertyById,
     getProperties,
-    addProperty
+    addProperty,
+    getLandlordBookings,
+    updateBookingStatus
 };

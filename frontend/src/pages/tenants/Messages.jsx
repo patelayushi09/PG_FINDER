@@ -68,7 +68,7 @@ function Messages() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-12rem)] bg-white rounded-lg shadow-sm">
+    <div className="space-y-6 p-8 bg-cream/10 min-h-screen flex-1">
       {/* Conversations List */}
       <div className="w-1/3 border-r">
         <div className="p-4 border-b">
