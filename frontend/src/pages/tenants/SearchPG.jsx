@@ -73,6 +73,7 @@ function SearchPG() {
     )
   })
 
+
   const handleFavoriteUpdate = () => {
     fetchFavorites()
   }

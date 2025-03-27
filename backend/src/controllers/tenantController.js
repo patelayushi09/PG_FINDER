@@ -313,7 +313,7 @@ const getFavorites = async (req, res) => {
 const addFavorite = async (req, res) => {
     const { tenantId, propertyId } = req.body
 
-    console.log("Request body:", req.body) // Log the request body for debugging
+    
 
     if (!tenantId || !propertyId) {
         return res.status(400).json({
@@ -379,6 +379,7 @@ const createBooking = async (req, res) => {
     try {
        
         const { tenantId, propertyId, landlordId, checkInDate, checkOutDate, totalAmount } = req.body;
+       
 
         // if (!tenantId || !propertyId || !landlordId || !checkInDate || !checkOutDate || !totalAmount) {
         //     return res.status(400).json({ error: true, message: "All fields are required" });
