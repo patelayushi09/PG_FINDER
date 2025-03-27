@@ -244,9 +244,12 @@ const sendWelcomeEmail = async (email, firstName) => {
 //Get all PG listings
 const getProperty = async (req, res) => {
     try {
+
         const properties = await Property.find()
-            .populate("cityId", "name")   // Populate city name
-            .populate("stateId", "name"); // Populate state name
+            .populate("cityId")
+            .populate("areaId")
+            .populate("stateId")
+            .populate("landlordId", "name email phoneno");
 
         res.status(200).json({ success: true, data: properties });
     } catch (error) {
@@ -254,40 +257,56 @@ const getProperty = async (req, res) => {
     }
 }
 
-// Get Favorites
+// get favorites
 const getFavorites = async (req, res) => {
-    const { tenantId } = req.params;
-
     try {
+        const { tenantId } = req.params;
+
         const favorites = await Favorite.find({ tenantId }).populate({
-            path: 'propertyId',
+            path: "propertyId",
             populate: [
-                { path: 'cityId', select: 'name' },  // Change "cityName" to "name"
-                { path: 'stateId', select: 'name' }  // Change "stateName" to "name"
+                { path: "cityId", select: "name" },
+                { path: "stateId", select: "name" },
+                { path: "areaId", select: "name" },
+                { path: "landlordId", select: "name email phoneno" } // ✅ Populating landlord details
             ]
         });
 
         const properties = favorites
             .filter(fav => fav.propertyId) // Ensure propertyId exists
-            .map((fav) => ({
-                id: fav.propertyId._id.toString(),
-                image: fav.propertyId.image || "/default-image.jpg",
-                propertyName: fav.propertyId.propertyName,
-                basePrice: fav.propertyId.basePrice,
-                furnishingStatus: fav.propertyId.furnishingStatus,
-                rating: fav.propertyId.rating,
-                city: fav.propertyId.cityId?.name || "Unknown",
-                state: fav.propertyId.stateId?.name || "Unknown",
+            .map(({ propertyId }) => ({
+                id: propertyId._id.toString(),
+                image: propertyId.image || "/default-image.jpg",
+                propertyName: propertyId.propertyName || "Unnamed Property",
+                title: propertyId.title || "No Title",
+                address: propertyId.address || "No Address",
+                bedrooms: propertyId.bedrooms || "Not specified",
+                bathrooms: propertyId.bathrooms || "Not specified",
+                basePrice: propertyId.basePrice || "0",
+                description: propertyId.description || "No Description Available",
+                furnishingStatus: propertyId.furnishingStatus || "Not Specified",
+                availabilityStatus: propertyId.availabilityStatus || "Not Specified",
+                rating: propertyId.rating || "No Rating",
+                city: propertyId.cityId?.name || "Unknown City",
+                state: propertyId.stateId?.name || "Unknown State",
+                area: propertyId.areaId?.name || "Unknown Area",
+
+                // ✅ Fetching landlord details
+                landlord: {
+                    id: propertyId.landlordId?._id?.toString() || "NA",
+                    name: propertyId.landlordId?.name || "NA",
+                    email: propertyId.landlordId?.email || "NA",
+                    phoneno: propertyId.landlordId?.phoneno || "NA",
+                }
             }));
 
-        res.status(200).json({ success: true, data: properties });
+        res.json({ success: true, data: properties });
 
     } catch (error) {
-        console.error('Error fetching favorites:', error);
-        res.status(500).json({ success: false, message: 'Server error' });
+        console.error("Error fetching favorites:", error);
+        res.status(500).json({ success: false, message: "Server error" });
     }
 };
-;
 
 
 // Add Favorite
@@ -358,7 +377,7 @@ const removeFavorite = async (req, res) => {
 // Create a new booking
 const createBooking = async (req, res) => {
     try {
-        console.log(req.user)
+       
         const { tenantId, propertyId, landlordId, checkInDate, checkOutDate, totalAmount } = req.body;
 
         // if (!tenantId || !propertyId || !landlordId || !checkInDate || !checkOutDate || !totalAmount) {

@@ -3,7 +3,7 @@ import axios from "axios";
 import { Plus, Filter, MoreVertical, MapPin } from "lucide-react";
 import AddPropertyForm from "./AddPropertyForm";
 import UpdatePropertyForm from "./UpdatePropertyForm";
-import PropertyDetails from "./PropertyDetails";
+import PropertyDetails from "../tenants/PropertyDetails";
 import PropertyFilter from "./PropertyFilter";
 
 const API_URL = "http://localhost:5000/admin/properties";
