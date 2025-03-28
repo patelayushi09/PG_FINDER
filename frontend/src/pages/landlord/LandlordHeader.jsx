@@ -19,11 +19,11 @@ export const LandlordHeader = () => {
   }, []);
 
   return (
-    <header className="bg-white shadow-sm fixed top-0 left-64 w-[calc(100%-16rem)] z-10">
+    <header className="bg-[#E6F0ED] shadow-sm fixed top-0 left-64 w-[calc(100%-16rem)] z-10">
       <div className="flex items-center justify-between px-6 py-3">
         {/* Logged-in User Welcome Text */}
         <h2 className="text-xl font-semibold text-[#103538]">
-        Welcome back, {storedLandlordName ? storedLandlordName : "Landlord"}!
+          Welcome back, {storedLandlordName ? storedLandlordName : "Landlord"}!
         </h2>
 
         {/* Right Side Icons & Profile */}
@@ -48,10 +48,11 @@ export const LandlordHeader = () => {
           <div className="flex items-center gap-3 border-l pl-4">
             <UserCircle className="w-10 h-10 text-[#759B87]" />
             <div>
-              <p className="text-sm font-medium text-[#103538]">
-              {storedLandlordName ? storedLandlordName : "Landlord"}
+              <p className="text-sm font-bold text-[#1c5b37]">
+                {storedLandlordName ? storedLandlordName : "Landlord"}
               </p>
-              <p className="text-xs text-[#759B87]">Premium Member</p>
+
+
             </div>
           </div>
         </div>

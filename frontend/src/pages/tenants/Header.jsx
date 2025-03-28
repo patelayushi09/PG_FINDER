@@ -42,10 +42,11 @@ export function Header(tenantName) {
             <UserCircle className="w-10 h-10 text-[#759B87]" />
             <div>
               {/* Show Tenant Name */}
-              <p className="text-sm font-medium text-[#103538]">
+              <p className="text-sm font-bold text-[#1c5b37]">
                 {storedTenantName ? `${storedTenantName.firstName} ${storedTenantName.lastName}` : "Guest"}
               </p>
-              <p className="text-xs text-[#759B87]">Premium Member</p>
+              
+
             </div>
           </div>
         </div>
