@@ -25,7 +25,11 @@ router.put("/properties/:id",landlordController.updateProperty)
 router.get("/properties/:id",landlordController.getPropertyById)
 router.post("/properties", authenticateToken("landlord"),upload.single("image"), landlordController.addProperty);
 
+
+
 router.get('/bookings/:landlordId', landlordController.getLandlordBookings);
 router.put('/bookings/:bookingId/status', landlordController.updateBookingStatus);
+
+router.get('/',landlordController.getLandlord)
 
 module.exports = router

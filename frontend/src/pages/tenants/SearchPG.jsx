@@ -140,7 +140,7 @@ function SearchPG() {
             <CreateBooking
               propertyId={selectedProperty._id}
               propertyName={selectedProperty.propertyName}
-              price={selectedProperty.price}
+              price={selectedProperty.basePrice}
               landlordId={selectedProperty.landlordId}
             />
             <button

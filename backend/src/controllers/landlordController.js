@@ -408,71 +408,9 @@ const getLandlordBookings = async (req, res) => {
 };
 
 // update booking status
-// const updateBookingStatus = async (req, res) => {
-//     try {
-//         console.log("Received request to update booking status");
-//         console.log("Params:", req.params);
-//         console.log("Body:", req.body);
-
-//         const { bookingId } = req.params;
-//         const { status } = req.body;
-
-//         if (!status) {
-//             return res.status(400).json({ error: true, message: "Status is required" });
-//         }
-
-//         const booking = await Booking.findById(bookingId)
-//             .populate("tenantId", "firstName lastName email")
-//             .populate("propertyId", "propertyName");
-
-//         if (!booking) {
-//             return res.status(404).json({ error: true, message: "Booking not found" });
-//         }
-
-//         console.log("Booking found:", booking);
-
-//         booking.status = status;
-//         await booking.save();
-
-//         console.log("Booking status updated:", booking.status);
-
-//         const tenantEmail = booking.tenantId?.email;
-//         const tenantName = `${booking.tenantId?.firstName || ""} ${booking.tenantId?.lastName || ""}`;
-//         const propertyName = booking.propertyId?.propertyName || "Unknown Property";
-
-//         console.log("Tenant Email:", tenantEmail);
-
-//         if (!tenantEmail) {
-//             console.warn("⚠️ No tenant email found! Skipping email sending.");
-//         } else {
-//             let subject, message;
-//             if (status === "confirmed") {
-//                 subject = "Booking Request Accepted ✅";
-//                 message = `Hello ${tenantName},\n\nYour booking request for "${propertyName}" has been accepted!\n\nThanks,\nPG Finder Team`;
-//             } else if (status === "rejected") {
-//                 subject = "Booking Request Rejected ❌";
-//                 message = `Hello ${tenantName},\n\nUnfortunately, your booking request for "${propertyName}" has been rejected.\n\nYou may try another property.\n\nPG Finder Team`;
-//             }
-
-//             console.log("Sending email with subject:", subject);
-
-//             if (subject && message) {
-//                 await sendEmail(tenantEmail, subject, message);
-//                 console.log("✅ Email sent successfully");
-//             }
-//         }
-
-//         res.status(200).json({ error: false, message: `Booking ${status} successfully` });
-//     } catch (error) {
-//         console.error("❌ Error updating booking status:", error);
-//         res.status(500).json({ error: true, message: "Failed to update booking status" });
-//     }
-// };
 const updateBookingStatus = async (req, res) => {
     try {
-        console.log("📌 Received request to update booking status");
-        console.log("Params:", req.params);
-        console.log("Body:", req.body);
+        
 
         const { bookingId } = req.params;
         const { status } = req.body;
@@ -548,6 +486,19 @@ const updateBookingStatus = async (req, res) => {
     }
 };
 
+// get all landlords
+const getLandlord = async(req,res)=>{
+    try {
+        const landlords = await Landlord.find();
+        res.json({ success: true, data: landlords });
+      } catch (error) {
+        res.status(500).json({ success: false, message: "Server error" });
+      }
+    
+}
+
+
+
 
 module.exports = {
     landlordSignup,
@@ -561,5 +512,7 @@ module.exports = {
     getProperties,
     addProperty,
     getLandlordBookings,
-    updateBookingStatus
+    updateBookingStatus,
+    getLandlord,
+    
 };

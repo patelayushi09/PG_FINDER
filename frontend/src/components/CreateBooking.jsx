@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-export default function CreateBooking({ propertyId, propertyName, price = 0, landlordId, onClose }) {
+export default function CreateBooking({ propertyId, propertyName, price = 0, landlordId }) {
   const [checkInDate, setCheckInDate] = useState("");
   const [checkOutDate, setCheckOutDate] = useState("");
   const [notes, setNotes] = useState("");
@@ -11,7 +11,7 @@ export default function CreateBooking({ propertyId, propertyName, price = 0, lan
   const [totalAmount, setTotalAmount] = useState(0);
 
   const tenantId = localStorage.getItem("tenantId");
- 
+
 
   useEffect(() => {
     if (!checkInDate || !checkOutDate || isNaN(price) || price <= 0) {
@@ -23,7 +23,11 @@ export default function CreateBooking({ propertyId, propertyName, price = 0, lan
     const end = new Date(checkOutDate);
     const diffDays = Math.round((end - start) / (1000 * 60 * 60 * 24));
 
-    setTotalAmount(diffDays * Number(price));
+    // Calculate daily price based on monthly price
+    const dailyPrice = Number(price) / 30;
+
+    // Calculate total amount based on selected days
+    setTotalAmount(diffDays * dailyPrice);
   }, [checkInDate, checkOutDate, price]);
 
   const handleSubmit = async (e) => {
@@ -49,28 +53,6 @@ export default function CreateBooking({ propertyId, propertyName, price = 0, lan
 
     console.log("Booking Request Data:", bookingData);
 
-  //   try {
-  //     setLoading(true);
-  //     setError(null);
-  //     setSuccess(null);
-  //     const token = localStorage.getItem('accessToken')
-
-  //     const response = await axios.post("http://localhost:5000/tenant/bookings", bookingData, {
-  //       headers: { Authorization: `Bearer ${token}` },
-  //     });
-
-  //     console.log("Booking Success:", response.data);
-  //     setSuccess("Booking successful!");
-  //     setCheckInDate("");
-  //     setCheckOutDate("");
-  //     setNotes("");
-  //   } catch (error) {
-  //     console.error("Error creating booking:", error.response?.data || error.message);
-  //     setError(error.response?.data?.message || "Failed to create booking. Please try again.");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
   try {
     setLoading(true);
     setError(null);
@@ -154,3 +136,5 @@ export default function CreateBooking({ propertyId, propertyName, price = 0, lan
     </div>
   );
 }
+
+

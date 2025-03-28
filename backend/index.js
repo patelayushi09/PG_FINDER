@@ -50,7 +50,9 @@ app.use("/city",cityRoutes )
 const areaRoutes = require('./src/routes/areaRoutes')
 app.use("/area",areaRoutes )
 
-/
+//import message routes
+const messageRoutes = require('./src/routes/messageRoutes')
+app.use("/message",messageRoutes )
 
 app.listen(port, () => {
     console.log(`PG_FINDER listening on port ${port}`);

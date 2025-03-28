@@ -70,3 +70,4 @@ const PropertyDetails = ({ property, onClose }) => {
 
 export default PropertyDetails;
 
+
