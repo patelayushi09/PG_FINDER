@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { ToastContainer,toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 export const Login = () => {
   const [email, setEmail] = useState('');
@@ -32,8 +35,16 @@ export const Login = () => {
           firstName: response.data.tenantName.firstName,
           lastName: response.data.tenantName.lastName
         }));// Store tenant's name
-        alert(response.data.message);
-        navigate("/tenant-dashboard");
+        //alert(response.data.message);
+        toast.success(response.data.message, {
+          position: "top-right",
+          autoClose: 3000, // 3 seconds
+         
+        });
+        setTimeout(()=>{
+          navigate("/tenant-dashboard");
+        },3000)
+        
       } else {
         setError(response.data.message || "Invalid credentials");
       }
@@ -124,6 +135,7 @@ export const Login = () => {
           </Link>
         </p>
       </form>
+      <ToastContainer/>
     </div>
   );
 };

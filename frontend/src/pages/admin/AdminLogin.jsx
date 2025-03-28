@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const AdminLogin = () => {
   const [email, setEmail] = useState('');
@@ -30,8 +32,16 @@ export const AdminLogin = () => {
 
       if (response.data.error == false) {
         localStorage.setItem("accessToken", response.data.accessToken);
-        alert(response.data.message)
-        navigate('/admin-dashboard');
+        //alert(response.data.message)
+
+        toast.success(response.data.message, {
+          position: "top-right",
+          autoClose: 3000, // 3 seconds
+
+        });
+        setTimeout(() => {
+          navigate("/admin-dashboard");
+        }, 3000)
       } else {
         setError(response.data.message || 'Invalid credentials');
       }
@@ -107,6 +117,7 @@ export const AdminLogin = () => {
           </button>
         </div>
       </form>
+      <ToastContainer/>
     </div>
   );
 };

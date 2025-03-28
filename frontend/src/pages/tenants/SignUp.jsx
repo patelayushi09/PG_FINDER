@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { ToastContainer,toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 export const SignUp = () => {
   const [step, setStep] = useState(1);
@@ -29,9 +32,15 @@ export const SignUp = () => {
       const response = await axios.post('http://localhost:5000/tenant/signup', signupInfo);
 
       if (response.data.error === false) {
-        alert(response.data.message);
-        navigate('/tenant-dashboard');
-      } else {
+        //alert(response.data.message);
+         toast.success(response.data.message, {
+                  position: "top-right",
+                  autoClose: 3000, // 3 seconds
+                 
+                });
+                setTimeout(()=>{
+                  navigate("/tenant-dashboard");
+                },3000)
         setError(response.data.message || 'Signup failed');
       }
     } catch (error) {
@@ -130,6 +139,7 @@ export const SignUp = () => {
           {error && <p className="text-red-500 mt-4">{error}</p>}
      
       </form>
+        <ToastContainer/>
     </div>
   );
 };

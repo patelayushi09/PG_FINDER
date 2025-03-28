@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const LandlordSignUp = () => {
   const [step, setStep] = useState(1);
@@ -62,8 +64,15 @@ export const LandlordSignUp = () => {
       const response = await axios.post('http://localhost:5000/landlord/signup', signupInformation);
 
       if (response.data.error === false) {
-        alert(response.data.message);
-        navigate('/landlord-dashboard');
+        //alert(response.data.message);
+        toast.success(response.data.message, {
+          position: "top-right",
+          autoClose: 3000, // 3 seconds
+
+        });
+        setTimeout(() => {
+          navigate("/landlord-dashboard");
+        }, 3000)
       } else {
         setError(response.data.message || 'Signup failed');
       }
@@ -135,6 +144,7 @@ export const LandlordSignUp = () => {
           )}
         </div>
       </form>
+      <ToastContainer />
     </div>
   );
 };

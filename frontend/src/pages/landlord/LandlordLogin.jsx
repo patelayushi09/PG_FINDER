@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { ToastContainer,toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const LandlordLogin = () => {
     const [email, setEmail] = useState('');
@@ -29,8 +31,15 @@ export const LandlordLogin = () => {
                 localStorage.setItem("landlordId", response.data.landlordId);
                 localStorage.setItem("landlordName", JSON.stringify(response.data.landlordName));
 
-                alert(response.data.message);
-                navigate('/landlord-dashboard');
+                //alert(response.data.message);
+                 toast.success(response.data.message, {
+                          position: "top-right",
+                          autoClose: 3000, // 3 seconds
+                         
+                        });
+                        setTimeout(()=>{
+                          navigate("/landlord-dashboard");
+                        },3000)
             } else {
                 setError(response.data.message || 'Invalid credentials');
             }
@@ -126,6 +135,7 @@ export const LandlordLogin = () => {
                     </p>
                 </div>
             </form>
+             <ToastContainer/>
         </div>
     );
 };
