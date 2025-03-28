@@ -49,29 +49,50 @@ export default function CreateBooking({ propertyId, propertyName, price = 0, lan
 
     console.log("Booking Request Data:", bookingData);
 
-    try {
-      setLoading(true);
-      setError(null);
-      setSuccess(null);
-      const token = localStorage.getItem('accessToken')
+  //   try {
+  //     setLoading(true);
+  //     setError(null);
+  //     setSuccess(null);
+  //     const token = localStorage.getItem('accessToken')
 
-      const response = await axios.post("http://localhost:5000/tenant/bookings", bookingData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+  //     const response = await axios.post("http://localhost:5000/tenant/bookings", bookingData, {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
 
-      console.log("Booking Success:", response.data);
-      setSuccess("Booking successful!");
-      setCheckInDate("");
-      setCheckOutDate("");
-      setNotes("");
-    } catch (error) {
-      console.error("Error creating booking:", error.response?.data || error.message);
-      setError(error.response?.data?.message || "Failed to create booking. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+  //     console.log("Booking Success:", response.data);
+  //     setSuccess("Booking successful!");
+  //     setCheckInDate("");
+  //     setCheckOutDate("");
+  //     setNotes("");
+  //   } catch (error) {
+  //     console.error("Error creating booking:", error.response?.data || error.message);
+  //     setError(error.response?.data?.message || "Failed to create booking. Please try again.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+  try {
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
+    const token = localStorage.getItem('accessToken');
+
+    const response = await axios.post("http://localhost:5000/tenant/bookings", bookingData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    console.log("Booking Success:", response.data);
+    setSuccess("Booking successful!");
+    setCheckInDate("");
+    setCheckOutDate("");
+    setNotes("");
+  } catch (error) {
+    console.error("Error creating booking:", error.response?.data || error.message);
+    setError(error.response?.data?.message || "Failed to create booking. Please try again.");
+  } finally {
+    setLoading(false);
+  }
   };
-
   return (
     <div className="max-w-md mx-auto bg-white shadow-lg rounded-lg p-6">
       <h2 className="text-2xl font-bold text-gray-800 mb-4">Book {propertyName}</h2>

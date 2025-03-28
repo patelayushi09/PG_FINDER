@@ -377,13 +377,23 @@ const removeFavorite = async (req, res) => {
 // Create a new booking
 const createBooking = async (req, res) => {
     try {
-       
         const { tenantId, propertyId, landlordId, checkInDate, checkOutDate, totalAmount } = req.body;
-       
 
-        // if (!tenantId || !propertyId || !landlordId || !checkInDate || !checkOutDate || !totalAmount) {
-        //     return res.status(400).json({ error: true, message: "All fields are required" });
-        // }
+        // Check if a booking already exists for the same tenant and property within the same date range
+        const existingBooking = await Booking.findOne({
+            tenantId,
+            propertyId,
+            $or: [
+                {
+                    checkInDate: { $lte: checkOutDate },
+                    checkOutDate: { $gte: checkInDate }
+                }
+            ]
+        });
+
+        if (existingBooking) {
+            return res.status(400).json({ error: true, message: "You have already booked this PG for the selected dates." });
+        }
 
         const newBooking = new Booking({
             tenantId,
@@ -403,6 +413,7 @@ const createBooking = async (req, res) => {
         res.status(500).json({ error: true, message: "Server error", details: error.message });
     }
 };
+
 
 // Get bookings by tenant
 const getBookingsByTenant = async (req, res) => {
