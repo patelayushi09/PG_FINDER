@@ -1,39 +1,46 @@
-import React from 'react';
-import { Building2, Star, MessageSquare } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 
-export function PerformanceMetrics() {
-  const metrics = [
-    { label: 'Property Verification Rate', value: 92, icon: Building2 },
-    { label: 'User Satisfaction', value: 88, icon: Star },
-    { label: 'Response Rate', value: 95, icon: MessageSquare }
-  ];
+function PerformanceMetrics({ metrics = {} }) {
+  const { responseRate = 0, bookingCompletionRate = 0, favoriteUtilizationRate = 0 } = metrics
+
+  const data = [
+    { name: "Response Rate", value: responseRate },
+    { name: "Booking Completion", value: bookingCompletionRate },
+    { name: "Favorite Utilization", value: favoriteUtilizationRate },
+  ]
 
   return (
     <div className="bg-white rounded-lg p-6 shadow-sm">
       <h2 className="text-lg font-semibold text-[#103538] mb-4">Performance Metrics</h2>
-      <div className="space-y-4">
-        {metrics.map((metric, index) => (
-          <div key={index} className="flex items-center justify-between">
-            <div className="flex items-center">
-              <div className="bg-[#DCD29F] bg-opacity-20 p-2 rounded-full">
-                <metric.icon className="w-5 h-5 text-[#D8B258]" />
-              </div>
-              <span className="ml-3 text-sm text-gray-600">{metric.label}</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-32 h-2 bg-gray-200 rounded-full mr-3">
-                <div 
-                  className="h-full bg-[#D96851] rounded-full"
-                  style={{ width: `${metric.value}%` }}
-                ></div>
-              </div>
-              <span className="text-sm font-medium text-[#103538]">{metric.value}%</span>
-            </div>
-          </div>
-        ))}
+
+      <div className="h-64">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Bar dataKey="value" fill="#759B87" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="grid grid-cols-3 gap-4 mt-6">
+        <div className="text-center">
+          <p className="text-sm text-gray-500">Response Rate</p>
+          <p className="text-xl font-semibold text-[#103538]">{responseRate}%</p>
+        </div>
+        <div className="text-center">
+          <p className="text-sm text-gray-500">Booking Completion</p>
+          <p className="text-xl font-semibold text-[#103538]">{bookingCompletionRate}%</p>
+        </div>
+        <div className="text-center">
+          <p className="text-sm text-gray-500">Favorite Utilization</p>
+          <p className="text-xl font-semibold text-[#103538]">{favoriteUtilizationRate}%</p>
+        </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default PerformanceMetrics;
+export default PerformanceMetrics

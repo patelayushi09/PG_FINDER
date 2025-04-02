@@ -6,6 +6,7 @@ const otpModel = require('../models/otpModel');
 const Property = require('../models/propertyModel')
 const Favorite = require('../models/favoriteModel')
 const Booking = require('../models/bookingModel')
+const Landlord =require('../models/landlordModel')
 require('dotenv').config()
 
 // Tenant signup
@@ -490,6 +491,101 @@ const deleteBooking = async (req, res) => {
 };
 
 
+//get dashboard data
+const getTenantDashboard = async (req, res) => {
+    try {
+      const { tenantId } = req.params;
+  
+      if (!tenantId || tenantId.length !== 24) {
+        return res.status(400).json({ error: true, message: "Invalid tenant ID" });
+      }
+  
+      const tenant = await Tenant.findById(tenantId);
+      if (!tenant) {
+        return res.status(404).json({ error: true, message: "Tenant not found" });
+      }
+  
+      // Define last month's date range
+      const lastMonth = new Date();
+      lastMonth.setMonth(lastMonth.getMonth() - 1);
+  
+      // Fetch previous month counts for trends
+      const [prevProperties, prevLandlords, prevTenants, prevBookings] = await Promise.all([
+        Property.countDocuments({ createdAt: { $lte: lastMonth } }),
+        Landlord.countDocuments({ createdAt: { $lte: lastMonth } }),
+        Tenant.countDocuments({ createdAt: { $lte: lastMonth } }),
+        Booking.countDocuments({ status: "confirmed", createdAt: { $lte: lastMonth } }),
+      ]);
+  
+      // Fetch current stats
+      const [totalProperties, totalLandlords, totalTenants, activeBookings, totalBookings, respondedBookings, totalFavorites] = await Promise.all([
+        Property.countDocuments(),
+        Landlord.countDocuments(),
+        Tenant.countDocuments(),
+        Booking.countDocuments({ status: "confirmed" }),
+        Booking.countDocuments(), // Total booking requests
+        Booking.countDocuments({ responded: true }), // Example: Adjust field for response tracking
+        Favorite.countDocuments({ tenantId }), // Count tenant's favorites
+      ]);
+  
+      // Trend Calculation
+      const calculateTrend = (current, previous) => {
+        if (previous === 0) return "+100%"; // Prevent division by zero
+        const change = ((current - previous) / previous) * 100;
+        return (change >= 0 ? "+" : "") + change.toFixed(1) + "%";
+      };
+  
+      const trends = {
+        totalProperties: calculateTrend(totalProperties, prevProperties),
+        totalLandlords: calculateTrend(totalLandlords, prevLandlords),
+        totalTenants: calculateTrend(totalTenants, prevTenants),
+        activeBookings: calculateTrend(activeBookings, prevBookings),
+      };
+  
+      // Performance Metrics Calculation
+      const responseRate = totalBookings > 0 ? ((respondedBookings / totalBookings) * 100).toFixed(1) : 0;
+      const bookingCompletionRate = totalBookings > 0 ? ((activeBookings / totalBookings) * 100).toFixed(1) : 0;
+      const favoriteUtilizationRate = totalProperties > 0 ? ((totalFavorites / totalProperties) * 100).toFixed(1) : 0;
+  
+      const performanceMetrics = {
+        responseRate: Number(responseRate),
+        bookingCompletionRate: Number(bookingCompletionRate),
+        favoriteUtilizationRate: Number(favoriteUtilizationRate),
+      };
+  
+      // Fetch recent tenant activities
+      const recentActivities = await Booking.find({ tenantId })
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .populate("propertyId", "propertyName")
+        .lean();
+  
+      const formattedActivities = recentActivities.map((booking) => ({
+        type: "Booking",
+        user: tenant.firstName + " " + tenant.lastName,
+        time: new Date(booking.createdAt).toLocaleDateString(),
+        status: booking.status.charAt(0).toUpperCase() + booking.status.slice(1),
+        propertyName: booking.propertyId?.propertyName || "Unknown Property",
+      }));
+  
+      return res.status(200).json({
+        error: false,
+        data: {
+          stats: { totalProperties, totalLandlords, totalTenants, activeBookings },
+          trends,
+          performanceMetrics,
+          recentActivities: formattedActivities,
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+      return res.status(500).json({ error: true, message: "Server error", details: error.message });
+    }
+  };
+  
+  
+
+
 module.exports = {
     tenantLogin,
     tenantSignup,
@@ -504,4 +600,5 @@ module.exports = {
     getBookingsByTenant,
     updateBookingStatus,
     deleteBooking,
+    getTenantDashboard
 };

@@ -1,123 +1,4 @@
 
-// import { useState, useEffect } from "react";
-// import axios from "axios";
-
-// const API_BASE_URL = "http://localhost:5000";
-
-// export default function Messages() {
-//   const [landlords, setLandlords] = useState([]);
-//   const [selectedLandlord, setSelectedLandlord] = useState("");
-//   const [properties, setProperties] = useState([]);
-//   const [selectedProperty, setSelectedProperty] = useState("");
-//   const [messages, setMessages] = useState([]);
-//   const [newMessage, setNewMessage] = useState("");
-
-//   const tenantId = localStorage.getItem("tenantId");
-
-//   useEffect(() => {
-//     // Fetch landlords
-//     const fetchLandlords = async () => {
-//       try {
-//         const response = await axios.get(`${API_BASE_URL}/landlord/`);
-//         setLandlords(response.data.data);
-//       } catch (error) {
-//         console.error("Error fetching landlords:", error);
-//       }
-//     };
-//     fetchLandlords();
-//   }, []);
-
-//   const fetchProperties = async (landlordId) => {
-//     setSelectedLandlord(landlordId);
-//     setSelectedProperty("");
-//     setMessages([]);
-//     try {
-//       const response = await axios.get(`${API_BASE_URL}/landlord/properties/${landlordId}`);
-//       setProperties(response.data.data);
-//     } catch (error) {
-//       console.error("Error fetching properties:", error);
-//     }
-//   };
-
-
-//   const fetchMessages = async (propertyId) => {
-//     setSelectedProperty(propertyId);
-//     setMessages([]);
-//     try {
-//       const response = await axios.get(`${API_BASE_URL}/messages/${propertyId}`);
-//       setMessages(response.data.data);
-//     } catch (error) {
-//       console.error("Error fetching messages:", error);
-//     }
-//   };
-
-//   const handleSendMessage = async () => {
-//     if (!newMessage.trim() || !selectedProperty) return;
-//     const messageData = {
-//       senderId: tenantId,
-//       receiverId: selectedLandlord,
-//       senderType: "tenant",
-//       receiverType: "landlord",
-//       content: newMessage,
-//       propertyId: selectedProperty,
-//     };
-//     try {
-//       const response = await axios.post(`${API_BASE_URL}/messages`, messageData);
-//       setMessages((prev) => [...prev, response.data.data]);
-//       setNewMessage("");
-//     } catch (error) {
-//       console.error("Error sending message:", error);
-//     }
-//   };
-
-//   return (
-//     <div>
-//       <h2>Select a Landlord</h2>
-//       <select value={selectedLandlord} onChange={(e) => fetchProperties(e.target.value)}>
-//         <option value="">Select Landlord</option>
-//         {landlords.map((landlord) => (
-//           <option key={landlord._id} value={landlord._id}>
-//             {landlord.name}
-//           </option>
-//         ))}
-//       </select>
-
-//       {selectedLandlord && (
-//         <div>
-//           <h2>Select a Property</h2>
-//           <select value={selectedProperty} onChange={(e) => fetchMessages(e.target.value)}>
-//             <option value="">Select Property</option>
-//             {properties.map((property) => (
-//               <option key={property._id} value={property._id}>
-//                 {property.name}
-//               </option>
-//             ))}
-//           </select>
-//         </div>
-//       )}
-
-//       {selectedProperty && (
-//         <div>
-//           <h2>Messages</h2>
-//           <div>
-//             {messages.map((msg) => (
-//               <p key={msg._id}>{msg.content}</p>
-//             ))}
-//           </div>
-//           <input
-//             type="text"
-//             value={newMessage}
-//             onChange={(e) => setNewMessage(e.target.value)}
-//             onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-//           />
-//           <button onClick={handleSendMessage}>Send</button>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
-
 import React, { useState, useEffect } from 'react';
 import { Send, User } from 'lucide-react';
 import axios from 'axios';
@@ -155,20 +36,21 @@ function Messages() {
     }
   };
 
-  const fetchMessages = async (landlordId) => {
-    setSelectedLandlord(landlordId);
+  const fetchMessages = async (conversationId) => {
+    setSelectedLandlord(conversationId);
     setLoading(prev => ({ ...prev, messages: true }));
     setError(null);
-    
+
     try {
-      const response = await axios.get(`${API_BASE_URL}/messages/${landlordId}`);
-      setMessages(response.data.data);
+        const response = await axios.get(`${API_BASE_URL}/message/conversations/${conversationId}`);
+        setMessages(response.data.data);
     } catch (error) {
-      setError("Failed to load messages. Please try again.");
+        setError("Failed to load messages. Please try again.");
     } finally {
-      setLoading(prev => ({ ...prev, messages: false }));
+        setLoading(prev => ({ ...prev, messages: false }));
     }
-  };
+};
+
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !selectedLandlord || !tenantId) return;
@@ -185,7 +67,7 @@ function Messages() {
     };
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/messages`, messageData);
+      const response = await axios.post(`${API_BASE_URL}/message`, messageData);
       setMessages(prev => [...prev, response.data.data]);
       setNewMessage("");
     } catch (error) {

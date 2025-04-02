@@ -9,8 +9,7 @@ router.get("/conversations/:conversationId", messageController.getConversationMe
 router.get("/conversations/:userId/:userType", messageController.getUserConversations)
 router.patch("/conversations/:conversationId/:userId/read", messageController.markMessagesAsRead)
 
-
-
-
-
 module.exports = router
+
+
+
