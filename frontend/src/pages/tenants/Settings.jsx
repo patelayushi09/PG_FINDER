@@ -155,7 +155,7 @@ function Settings() {
 
   return (
     
-      <div className="bg-white rounded-lg p-6 shadow-sm">
+      <div className="space-y-6 p-8 bg-cream/10 min-h-screen flex-1">
         <h2 className="text-xl font-semibold text-[#103538] mb-6">Profile Settings</h2>
 
         <div className="flex flex-col items-center mb-8">
