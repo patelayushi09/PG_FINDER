@@ -26,4 +26,9 @@ router.delete("/bookings/:bookingId", tenantController.deleteBooking);
 
 router.get("/dashboard/:tenantId",authenticateToken("tenant"),tenantController.getTenantDashboard)
 
+
+router.get("/:tenantId", authenticateToken("tenant"), tenantController.getTenantById)
+router.put("/:tenantId", authenticateToken("tenant"), tenantController.updateTenant)
+
+
 module.exports = router

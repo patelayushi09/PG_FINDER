@@ -1,230 +1,270 @@
-import React, { useState, useEffect } from 'react';
-import { User, Lock, Bell, CreditCard } from 'lucide-react';
-import axios from 'axios';
+import { useState, useEffect } from "react"
+import axios from "axios"
+import { User } from "lucide-react"
+import { FileUploaderRegular } from "@uploadcare/react-uploader"
+import "@uploadcare/react-uploader/core.css"
 
 function Settings() {
   const [tenant, setTenant] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phoneno: '',
-    location: '',
-    profileImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80',
-    membershipType: 'Premium'
-  });
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneno: "",
+    location: "",
+    profileImage: "",
+
+  })
 
   const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    location: ''
-  });
+    fullName: "",
+    email: "",
+    phone: "",
+    location: "",
+  })
 
-  
+  const [image, setImage] = useState("")
+  const [imageError, setImageError] = useState("")
+  const [isUploading, setIsUploading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+
   useEffect(() => {
-    fetchTenantData();
-  }, []);
+    fetchTenantData()
+  }, [])
 
   const fetchTenantData = async () => {
+    setIsLoading(true)
     try {
-      //const token = localStorage.getItem("accessToken");
-      const tenantId = localStorage.getItem("tenantId"); 
-      const response = await axios.get(`http://localhost:5000/tenant/${tenantId}`);
-      const tenantData = response.data.data;
-      
-      setTenant(tenantData);
+      const token = localStorage.getItem("accessToken")
+      const tenantId = localStorage.getItem("tenantId")
+
+      const response = await axios.get(`http://localhost:5000/tenant/${tenantId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+
+      const tenantData = response.data.data
+      setTenant(tenantData)
+
       setFormData({
-        fullName: `${tenantData.firstName} ${tenantData.lastName}`,
-        email: tenantData.email,
-        phone: tenantData.phoneno,
-        location: tenantData.location
-      });
+        fullName: `${tenantData.firstName || ""} ${tenantData.lastName || ""}`.trim(),
+        email: tenantData.email || "",
+        phone: tenantData.phoneno || "",
+        location: tenantData.location || "",
+      })
+
+      setImage(tenantData.profileImage || "")
     } catch (error) {
-      console.error('Error fetching tenant data:', error);
+      console.error("Error fetching tenant data:", error)
+    } finally {
+      setIsLoading(false)
     }
-  };
+  }
+
+  const handleFileChange = async (fileList) => {
+    if (fileList && fileList.allEntries && fileList.allEntries.length > 0) {
+      const fileInfo = fileList.allEntries[0]
+      setIsUploading(true)
+
+      if (fileInfo.cdnUrl) {
+        setImage(fileInfo.cdnUrl)
+        setImageError("")
+
+        // Immediately update the profile image in the database
+        try {
+          const tenantId = localStorage.getItem("tenantId")
+          const token = localStorage.getItem("accessToken")
+
+          const updateData = {
+            profileImage: fileInfo.cdnUrl,
+          }
+
+          const response = await axios.put(`http://localhost:5000/tenant/${tenantId}`, updateData, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+
+          if (response.data.error === false) {
+            // Update the tenant state with the new image
+            setTenant((prevTenant) => ({
+              ...prevTenant,
+              profileImage: fileInfo.cdnUrl,
+            }))
+            console.log("Profile image updated successfully")
+          } else {
+            console.error("Failed to update profile image:", response.data.message)
+            setImageError("Failed to save image to database")
+          }
+        } catch (error) {
+          console.error("Error updating profile image:", error)
+          setImageError("Failed to save image to database")
+        }
+      } else {
+        setImageError("Image upload failed. Please try again.")
+      }
+
+      setIsUploading(false)
+    }
+  }
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+    const { name, value } = e.target
+    setFormData({
+      ...formData,
+      [name]: value,
+    })
+  }
 
   const handleSaveChanges = async () => {
     try {
-      const tenantId = localStorage.getItem("tenantId");
-      
-      // Split full name into first and last name
-      const [firstName, ...lastNameParts] = formData.fullName.split(' ');
-      const lastName = lastNameParts.join(' ');
+      const tenantId = localStorage.getItem("tenantId")
+      const token = localStorage.getItem("accessToken")
+
+      const [firstName, ...lastNameParts] = formData.fullName.split(" ")
+      const lastName = lastNameParts.join(" ")
 
       const updateData = {
         firstName,
         lastName,
         email: formData.email,
         phoneno: formData.phone,
-        location: formData.location
-      };
+        location: formData.location,
+        profileImage: image || tenant.profileImage,
+      }
 
-      await axios.put(`http://localhost:5000/tenant/${tenantId}`, updateData);
-      
-      // Refresh tenant data
-      await fetchTenantData();
-      
-      alert('Profile updated successfully!');
+      const response = await axios.put(`http://localhost:5000/tenant/${tenantId}`, updateData, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+
+      if (response.data.error === false) {
+        await fetchTenantData()
+        alert("Profile updated successfully!")
+      } else {
+        alert(response.data.message || "Failed to update profile")
+      }
     } catch (error) {
-      console.error('Error updating profile:', error);
-      alert('Failed to update profile. Please try again.');
+      console.error("Error updating profile:", error)
+      alert("Failed to update profile. Please try again.")
     }
-  };
+  }
 
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    try {
-      const formData = new FormData();
-      formData.append('profileImage', file);
-
-      const tenantId = localStorage.getItem("tenantId");
-      
-      await axios.post(`http://localhost:5000/tenant/${tenantId}/profile-image`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-
-      // Refresh tenant data
-      await fetchTenantData();
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      alert('Failed to upload image. Please try again.');
-    }
-  };
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#103538]"></div>
+      </div>
+    )
+  }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-3xl mx-auto p-6 bg-gray-50 min-h-screen">
       <div className="bg-white rounded-lg p-6 shadow-sm">
         <h2 className="text-xl font-semibold text-[#103538] mb-6">Profile Settings</h2>
-        <div className="space-y-4">
-          <div className="flex items-center space-x-4 mb-6">
-            <div className="relative">
+
+        <div className="flex flex-col items-center mb-8">
+          <div className="relative">
+            <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-300 flex items-center justify-center">
               <img
-                src={tenant.profileImage}
+                src={image || tenant.profileImage || "/placeholder.svg?height=96&width=96"}
                 alt="Profile"
-                className="w-20 h-20 rounded-full object-cover"
+                className="w-full h-full object-cover"
               />
-              <label className="absolute bottom-0 right-0 bg-[#103538] text-white p-2 rounded-full hover:bg-opacity-90 cursor-pointer">
-                <input
-                  type="file"
-                  className="hidden"
+            </div>
+            <div className="absolute bottom-2 right-2 bg-white p-1 rounded-full shadow-md">
+              <label className="cursor-pointer flex items-center justify-center bg-[#103538] text-white p-2 rounded-full hover:bg-opacity-90">
+                {isUploading ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  <User className="w-4 h-4" />
+                )}
+                <FileUploaderRegular
+                  onChange={handleFileChange}
+                  pubkey={import.meta.env.VITE_UPLOAD_CARE_PUBLIC_KEY}
                   accept="image/*"
-                  onChange={handleImageUpload}
+                  multiple={false}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
                 />
-                <User className="w-4 h-4" />
               </label>
-            </div>
-            <div>
-              <h3 className="text-lg font-medium text-[#103538]">{formData.fullName}</h3>
-              <p className="text-gray-500">{tenant.membershipType} Member</p>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Full Name
-              </label>
-              <input
-                type="text"
-                name="fullName"
-                value={formData.fullName}
-                onChange={handleInputChange}
-                className="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D8B258]"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                className="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D8B258]"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Phone
-              </label>
-              <input
-                type="tel"
-                name="phone"
-                value={formData.phone}
-                onChange={handleInputChange}
-                className="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D8B258]"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Location
-              </label>
-              <input
-                type="text"
-                name="location"
-                value={formData.location}
-                onChange={handleInputChange}
-                className="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D8B258]"
-              />
-            </div>
+
+          {imageError && <p className="text-red-500 text-sm mt-1">{imageError}</p>}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
+              Full Name
+            </label>
+            <input
+              type="text"
+              id="fullName"
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleInputChange}
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#103538]"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#103538]"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+              Phone
+            </label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              value={formData.phone}
+              onChange={handleInputChange}
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#103538]"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
+              Location
+            </label>
+            <input
+              type="text"
+              id="location"
+              name="location"
+              value={formData.location}
+              onChange={handleInputChange}
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#103538]"
+            />
           </div>
         </div>
-      </div>
 
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <h2 className="text-xl font-semibold text-[#103538] mb-6">Account Settings</h2>
-        <div className="space-y-4">
-          <button className="w-full flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
-            <div className="flex items-center">
-              <Lock className="w-5 h-5 text-[#D8B258] mr-3" />
-              <span>Password & Security</span>
-            </div>
+        <div className="flex justify-end mt-6">
+          <button
+            onClick={fetchTenantData}
+            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 mr-2 hover:bg-gray-50"
+          >
+            Cancel
           </button>
-          <button className="w-full flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
-            <div className="flex items-center">
-              <Bell className="w-5 h-5 text-[#D8B258] mr-3" />
-              <span>Notifications</span>
-            </div>
-          </button>
-          <button className="w-full flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
-            <div className="flex items-center">
-              <CreditCard className="w-5 h-5 text-[#D8B258] mr-3" />
-              <span>Payment Methods</span>
-            </div>
+          <button
+            onClick={handleSaveChanges}
+            className="px-4 py-2 bg-[#103538] text-white rounded-md hover:bg-opacity-90"
+          >
+            Save Changes
           </button>
         </div>
-      </div>
-
-      <div className="flex justify-end space-x-4">
-        <button 
-          onClick={fetchTenantData}
-          className="px-6 py-2 border border-gray-200 rounded-lg hover:bg-gray-50"
-        >
-          Cancel
-        </button>
-        <button 
-          onClick={handleSaveChanges}
-          className="px-6 py-2 bg-[#103538] text-white rounded-lg hover:bg-opacity-90"
-        >
-          Save Changes
-        </button>
       </div>
     </div>
-  );
+  )
 }
 
-export default Settings;
+export default Settings
+
