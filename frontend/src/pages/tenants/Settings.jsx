@@ -154,7 +154,7 @@ function Settings() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-gray-50 min-h-screen">
+    
       <div className="bg-white rounded-lg p-6 shadow-sm">
         <h2 className="text-xl font-semibold text-[#103538] mb-6">Profile Settings</h2>
 
@@ -262,7 +262,7 @@ function Settings() {
           </button>
         </div>
       </div>
-    </div>
+   
   )
 }
 
