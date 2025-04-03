@@ -32,4 +32,7 @@ router.put('/bookings/:bookingId/status', landlordController.updateBookingStatus
 
 router.get('/',landlordController.getLandlord)
 
+router.get('/dashboard/:landlordId',authenticateToken("landlord"),landlordController.dashboardData)
+
+
 module.exports = router

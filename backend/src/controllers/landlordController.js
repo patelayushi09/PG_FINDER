@@ -5,6 +5,7 @@ const nodemailer = require('nodemailer');
 const otpModel = require('../models/otpModel');
 const Property = require('../models/propertyModel')
 const Booking = require('../models/bookingModel')
+const Tenant = require('../models/tenantModel')
 require('dotenv').config()
 
 // Landlord signup
@@ -410,7 +411,7 @@ const getLandlordBookings = async (req, res) => {
 // update booking status
 const updateBookingStatus = async (req, res) => {
     try {
-        
+
 
         const { bookingId } = req.params;
         const { status } = req.body;
@@ -472,31 +473,79 @@ const updateBookingStatus = async (req, res) => {
                         text: message,
                     });
 
-                    console.log("✅ Email sent successfully:", info.messageId);
+                    console.log(" Email sent successfully:", info.messageId);
                 } catch (emailError) {
-                    console.error("❌ Error sending email:", emailError);
+                    console.error(" Error sending email:", emailError);
                 }
             }
         }
 
         res.status(200).json({ error: false, message: `Booking ${status} successfully` });
     } catch (error) {
-        console.error("❌ Error updating booking status:", error);
+        console.error(" Error updating booking status:", error);
         res.status(500).json({ error: true, message: "Failed to update booking status" });
     }
 };
 
 // get all landlords
-const getLandlord = async(req,res)=>{
+const getLandlord = async (req, res) => {
     try {
         const landlords = await Landlord.find();
         res.json({ success: true, data: landlords });
-      } catch (error) {
+    } catch (error) {
         res.status(500).json({ success: false, message: "Server error" });
-      }
-    
+    }
+
 }
 
+// dashboard data
+const dashboardData = async (req, res) => {
+    try {
+        const landlordId = req.params.landlordId; // Get landlordId from request params
+
+        // Validate landlord existence
+        const landlord = await Landlord.findById(landlordId);
+        if (!landlord) {
+            return res.status(404).json({ error: "Landlord not found" });
+        }
+
+        // Fetch total counts
+        const totalProperties = await Property.countDocuments();
+        const totalLandlords = await Landlord.countDocuments();
+        const totalTenants = await Tenant.countDocuments();
+        const activeBookings = await Booking.countDocuments({ status: "confirmed" });
+
+        // Fetch previous stats (Example placeholders)
+        const previousStats = {
+            totalProperties: totalProperties - 5,
+            totalLandlords: totalLandlords - 2,
+            totalTenants: totalTenants - 10,
+            activeBookings: activeBookings - 3
+        };
+
+        // Fetch properties owned by the logged-in landlord and populate city & state
+        const properties = await Property.find({ landlordId })
+            .populate("cityId", "name")  // Only fetch the 'name' field
+            .populate("stateId", "name"); // Only fetch the 'name' field
+
+        res.json({
+            success: true,
+            data: {
+                stats: {
+                    totalProperties,
+                    totalLandlords,
+                    totalTenants,
+                    activeBookings
+                },
+                previousStats,
+                properties
+            }
+        });
+    } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+        res.status(500).json({ error: "Server error" });
+    }
+};
 
 
 
@@ -514,5 +563,7 @@ module.exports = {
     getLandlordBookings,
     updateBookingStatus,
     getLandlord,
-    
+    dashboardData,
+
+
 };
