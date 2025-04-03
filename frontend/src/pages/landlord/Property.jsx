@@ -94,7 +94,7 @@ const Property = () => {
           <div className="relative">
             <input
               type="text"
-              placeholder="Search by name, address, or state..."
+              placeholder="Search by name or state..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D96851]"

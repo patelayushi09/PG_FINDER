@@ -34,5 +34,7 @@ router.get('/',landlordController.getLandlord)
 
 router.get('/dashboard/:landlordId',authenticateToken("landlord"),landlordController.dashboardData)
 
+router.get('/tenants/confirmed',landlordController.getConfirmedTenants)
+
 
 module.exports = router

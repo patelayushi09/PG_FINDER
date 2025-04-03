@@ -547,7 +547,32 @@ const dashboardData = async (req, res) => {
     }
 };
 
-
+//getConfirmedTenants 
+const getConfirmedTenants = async (req, res) => {
+    try {
+        const confirmedBookings = await Booking.find({ status: "confirmed" })
+          .populate("tenantId", "firstName lastName phoneno email")
+          .populate("propertyId", "propertyName");
+    
+        if (confirmedBookings.length === 0) {
+          return res.status(404).json({ success: false, message: "No confirmed tenants found" });
+        }
+    
+        const tenants = confirmedBookings.map((booking) => ({
+          id: booking.tenantId._id,
+          name: `${booking.tenantId.firstName} ${booking.tenantId.lastName}`,
+          contact: booking.tenantId.phoneno,  // Ensure this field exists
+          email: booking.tenantId.email,
+          propertyName: booking.propertyId?.propertyName || "N/A",  // Handle missing property data
+          joinDate: booking.checkInDate.toISOString().split("T")[0], // Format date correctly
+        }));
+    
+        res.status(200).json({ success: true, tenants });
+      } catch (error) {
+        console.error("Error fetching confirmed tenants:", error);
+        res.status(500).json({ success: false, error: "Server error" });
+      }
+}
 
 module.exports = {
     landlordSignup,
@@ -564,6 +589,6 @@ module.exports = {
     updateBookingStatus,
     getLandlord,
     dashboardData,
-
+    getConfirmedTenants
 
 };
