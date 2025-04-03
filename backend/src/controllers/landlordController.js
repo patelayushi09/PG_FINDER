@@ -574,6 +574,80 @@ const getConfirmedTenants = async (req, res) => {
       }
 }
 
+
+// Get landlord by ID
+const getLandlordById = async (req, res) => {
+    try {
+        const { landlordId } = req.params;
+
+        if (!landlordId) {
+            return res.status(400).json({ error: true, message: "Landlord ID is required" });
+        }
+
+        const landlord = await Landlord.findById(landlordId); // ✅ FIXED
+
+        if (!landlord) {
+            return res.status(404).json({ error: true, message: "Landlord not found" });
+        }
+
+        res.status(200).json({
+            error: false,
+            data: landlord,
+        });
+    } catch (error) {
+        console.error("Error fetching landlord:", error);
+        res.status(500).json({ error: true, message: "Server error", details: error.message });
+    }
+};
+
+// Update landlord
+const updateLandlord = async (req, res) => {
+    try {
+        const { landlordId } = req.params;
+        const { name, email, phoneno, location, profileImage } = req.body;
+
+        if (!landlordId) {
+            return res.status(400).json({ error: true, message: "Landlord ID is required" });
+        }
+
+        // Check if email already exists for another landlord
+        if (email) {
+            const existingLandlord = await Landlord.findOne({ email, _id: { $ne: landlordId } });
+            if (existingLandlord) {
+                return res.status(400).json({ error: true, message: "Email already in use by another landlord" });
+            }
+        }
+
+        // Create update object dynamically
+        const updateData = {};
+        if (name) updateData.name = name;
+        if (email) updateData.email = email;
+        if (phoneno) updateData.phoneno = phoneno;
+        if (location) updateData.location = location;
+        if (profileImage) updateData.profileImage = profileImage; // ✅ Profile Image is now included
+
+        const updatedLandlord = await Landlord.findByIdAndUpdate(
+            landlordId,
+            updateData,
+            { new: true, runValidators: true }
+        ); // ✅ FIXED
+
+        if (!updatedLandlord) {
+            return res.status(404).json({ error: true, message: "Landlord not found" });
+        }
+
+        res.status(200).json({
+            error: false,
+            message: "Landlord profile updated successfully",
+            data: updatedLandlord,
+        });
+    } catch (error) {
+        console.error("Error updating landlord:", error);
+        res.status(500).json({ error: true, message: "Server error", details: error.message });
+    }
+};
+
+
 module.exports = {
     landlordSignup,
     landlordLogin,
@@ -589,6 +663,8 @@ module.exports = {
     updateBookingStatus,
     getLandlord,
     dashboardData,
-    getConfirmedTenants
+    getConfirmedTenants,
+    getLandlordById,
+    updateLandlord
 
 };

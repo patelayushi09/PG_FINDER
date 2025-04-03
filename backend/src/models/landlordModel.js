@@ -34,6 +34,12 @@ const LandlordSchema = new Schema({
     },
     confirmPassword: {
         type: String,
+    },
+    profileImage: {
+        type: String,
+    },
+    location: {
+        type: String,
     }
 });
 
