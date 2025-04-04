@@ -648,6 +648,36 @@ const updateLandlord = async (req, res) => {
 };
 
 
+// Get properties by landlord ID
+const getPropertyByLandordId= async (req, res) => {
+    try {
+        const { landlordId } = req.params;
+        
+        // Find all properties that belong to this landlord
+        const properties = await Property.find({ landlordId }).select('_id propertyName address basePrice description');
+        
+        if (!properties) {
+          return res.status(404).json({
+            error: true,
+            message: "No properties found for this landlord"
+          });
+        }
+        
+        // Return the properties
+        res.status(200).json({
+          error: false,
+          data: properties
+        });
+      } catch (error) {
+        console.error('Error fetching landlord properties:', error);
+        res.status(500).json({
+          error: true,
+          message: "Failed to fetch landlord properties"
+        });
+      }
+  };
+
+
 module.exports = {
     landlordSignup,
     landlordLogin,
@@ -665,6 +695,7 @@ module.exports = {
     dashboardData,
     getConfirmedTenants,
     getLandlordById,
-    updateLandlord
+    updateLandlord,
+    getPropertyByLandordId
 
 };

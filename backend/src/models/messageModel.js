@@ -12,12 +12,12 @@ const MessageSchema = new Schema({
       },
       senderType: {
         type: String,
-        enum: ["tenant", "landlord", "agent"],
+        enum: ["tenant", "landlord"],
         required: true,
       },
       receiverType: {
         type: String,
-        enum: ["tenant", "landlord", "agent"],
+        enum: ["tenant", "landlord"],
         required: true,
       },
       content: {
@@ -39,6 +39,10 @@ const MessageSchema = new Schema({
       },
 });
 
+// Add indexes for faster queries
+MessageSchema.index({ senderId: 1, receiverId: 1 })
+MessageSchema.index({ propertyId: 1 })
+MessageSchema.index({ createdAt: -1 })
 module.exports = mongoose.model('Message', MessageSchema)
 
 

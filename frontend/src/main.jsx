@@ -37,6 +37,9 @@ import { LandlordLogin } from './pages/landlord/LandlordLogin.jsx'
 import { LandlordChangePassword } from './pages/landlord/LandlordChangePassword.jsx'
 import { LandlordForgotPassword } from './pages/landlord/LandlordForgotPassword.jsx'
 import { LandlordOtpLogin } from './pages/landlord/LandlordOtpLogin.jsx'
+import { ChatProvider } from './context/ChatContext';
+import { UserProvider } from './context/UserContext';
+
 
 const router = createBrowserRouter([
   {
@@ -194,8 +197,14 @@ const router = createBrowserRouter([
 ])
 
 
+
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <ChatProvider>
+      <UserProvider>
+        <RouterProvider router={router} />
+      </UserProvider>
+    </ChatProvider>
   </React.StrictMode>
 );
+
