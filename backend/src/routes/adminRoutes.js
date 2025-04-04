@@ -27,6 +27,6 @@ router.post("/properties",authenticateToken("landlord"),adminController.addPrope
 
 router.get("/landlords", adminController.getLandlords);
 
-// router.get("/dashboard", adminController.getDashboard)
+router.get("/dashboard", adminController.getAdminDashboard)
 
 module.exports = router

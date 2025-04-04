@@ -6,6 +6,7 @@ const otpModel = require('../models/otpModel')
 const Tenant = require('../models/tenantModel')
 const Landlord = require('../models/landlordModel')
 const Property = require('../models/propertyModel')
+const Booking = require('../models/bookingModel')
 require('dotenv').config()
 
 
@@ -330,9 +331,9 @@ const addUser = async (req, res) => {
 
 // Add Property
 const addProperty = async (req, res) => {
-  
+
     try {
-       
+
         const { title, propertyName, address, stateId, cityId, areaId, bedrooms, bathrooms, rating, description, basePrice, furnishingStatus, availabilityStatus, image } = req.body;
 
         if (!req.user.landlordId) {
@@ -378,7 +379,7 @@ const getProperties = async (req, res) => {
             .populate("cityId")
             .populate("areaId")
             .populate("stateId")
-            .populate("landlordId", "name email phoneno"); 
+            .populate("landlordId", "name email phoneno");
 
         res.json({ success: true, data: properties });
     } catch (error) {
@@ -455,21 +456,62 @@ const getLandlords = async (req, res) => {
             .select('_id name email phoneno')
             .sort({ name: 1 });
 
-        res.json({ 
-            success: true, 
+        res.json({
+            success: true,
             message: "Landlords fetched successfully",
-            data: landlords 
+            data: landlords
         });
     } catch (error) {
         console.error("Error fetching landlords:", error);
-        res.status(500).json({ 
-            success: false, 
-            message: "Error fetching landlords", 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            message: "Error fetching landlords",
+            error: error.message
         });
     }
 };
 
+// get admin dashboard
+const getAdminDashboard = async (req, res) => {
+    try {
+        // Fetch counts
+        const totalTenants = await Tenant.countDocuments();
+        const totalLandlords = await Landlord.countDocuments();
+        const totalProperties = await Property.countDocuments();
+        const totalBookings = await Booking.countDocuments();
+
+        // Fetch recent bookings with user and PG (property) name
+        const recentBookings = await Booking.find()
+            .sort({ createdAt: -1 }) // Get latest bookings
+            .limit(10) // Limit to 10 recent bookings
+            .populate("tenantId", "firstName lastName") // Get tenant name
+            .populate("propertyId", "propertyName") // Get PG name
+            .select("status checkInDate tenantId propertyId");
+
+        // Format recent bookings
+        const formattedBookings = recentBookings.map(booking => ({
+            id: booking._id,
+            user: `${booking.tenantId.firstName} ${booking.tenantId.lastName}`,
+            pg: booking.propertyId ? booking.propertyId.propertyName : "N/A",
+            date: booking.checkInDate.toISOString().split("T")[0],
+            status: booking.status
+        }));
+
+        res.status(200).json({
+            success: true,
+            data: {
+                totalTenants,
+                totalLandlords,
+                totalProperties,
+                totalBookings,
+                recentBookings: formattedBookings
+            }
+        });
+    } catch (error) {
+        console.error("Error fetching admin dashboard data:", error);
+        res.status(500).json({ success: false, message: "Internal Server Error", error: error.message });
+    }
+};
 
 module.exports = {
     adminLogin,
@@ -487,5 +529,5 @@ module.exports = {
     updateProperty,
     deleteProperty,
     getLandlords,
-
+    getAdminDashboard
 }

@@ -21,7 +21,6 @@ import Properties from './pages/admin/Properties.jsx';
 import AdminHomePage from './pages/admin/AdminHomePage.jsx';
 import Disputes from './pages/admin/Disputes.jsx';
 import Analytics from './pages/admin/Analytics.jsx';
-import Setting from './pages/admin/Setting.jsx';
 import { AdminLogin } from './pages/admin/AdminLogin.jsx'
 import AdminForgotPassword from './pages/admin/AdminForgotPassword.jsx'
 import AdminOtpLogin from './pages/admin/AdminOtpLogin.jsx'
@@ -121,10 +120,7 @@ const router = createBrowserRouter([
         path: "analytics",
         element: <Analytics />
       },
-      {
-        path: "settings",
-        element: <Setting />
-      }
+      
     ]
   },
   {

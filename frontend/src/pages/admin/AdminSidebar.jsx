@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
     Home, MessageSquare, LayoutDashboardIcon,
-    Settings, Building2,
+     Building2,
     AlertCircle, BarChart3, User2Icon
 } from "lucide-react";
 
@@ -19,7 +19,7 @@ const AdminSidebar = () => {
         { name: "Messages", icon: MessageSquare, path: "/admin-dashboard/messages" },
         { name: "Disputes", icon: AlertCircle, path: "/admin-dashboard/disputes" },
         { name: "Analytics", icon: BarChart3, path: "/admin-dashboard/analytics" },
-        { name: "Settings", icon: Settings, path: "/admin-dashboard/settings" }
+        
     ];
 
     return (
