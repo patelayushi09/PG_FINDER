@@ -21,7 +21,7 @@ export const LandlordSidebar = () => {
     const handleLogout = () => {
         localStorage.removeItem("accessToken");  
         localStorage.removeItem("tenantId");     
-        navigate("/landlord/login");  // ✅ Use navigate here
+        navigate("/landlord/login");  //  Use navigate here
       };
     
 

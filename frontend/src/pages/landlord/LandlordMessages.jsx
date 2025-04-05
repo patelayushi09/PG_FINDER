@@ -23,6 +23,7 @@ export default function LandlordMessages() {
       Notification.requestPermission();
     }
   }, []);
+ 
 
   useEffect(() => {
     // Auto-scroll to bottom on new messages
@@ -191,3 +192,6 @@ export default function LandlordMessages() {
     </div>
   );
 }
+
+
+

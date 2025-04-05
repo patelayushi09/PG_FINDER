@@ -94,14 +94,32 @@ export default function ChatNotification() {
 
           <div className="p-2 border-t text-center">
             <button
+              // onClick={() => {
+              //   setIsOpen(false);
+              //   if (tenant) {
+              //     navigate("/tenant-dashboard/messages"); 
+              //   } else if (landlord) {
+              //     navigate("/landlord-dashboard/messages"); 
+              //   }
+              // }}
               onClick={() => {
                 setIsOpen(false);
+              
+                // Auto-select first unread conversation (or any available)
+                const defaultConversation =
+                  unreadConversations[0] || conversations[0]; // fallback to first if no unread
+              
+                if (defaultConversation) {
+                  selectConversation(defaultConversation);
+                }
+              
                 if (tenant) {
-                  navigate("/tenant-dashboard/messages"); 
+                  navigate("/tenant-dashboard/messages");
                 } else if (landlord) {
-                  navigate("/landlord-dashboard/messages"); 
+                  navigate("/landlord-dashboard/messages");
                 }
               }}
+              
               className="text-sm text-[#103538] hover:underline"
             >
               View all messages
@@ -112,3 +130,5 @@ export default function ChatNotification() {
     </div>
   );
 }
+
+

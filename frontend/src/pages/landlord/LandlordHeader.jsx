@@ -17,7 +17,7 @@ export const LandlordHeader = () => {
         console.error("Error parsing user data from localStorage:", error);
       }
     }
-  }, []); 
+  }, []);
 
   return (
     <header className="bg-[#E6F0ED] shadow-sm fixed top-0 left-64 w-[calc(100%-16rem)] z-10">
@@ -29,8 +29,10 @@ export const LandlordHeader = () => {
 
         {/* Right Side Icons & Profile */}
         <div className="flex items-center gap-6">
-          {/* Notifications Icon */}
-          <ChatNotification />
+          {/* Chat Notification First */}
+          <div className="relative">
+            <ChatNotification />
+          </div>
 
           {/* Profile Section */}
           <div className="flex items-center gap-3 border-l pl-4">
