@@ -28,7 +28,6 @@ import AdminChangePassword from './pages/admin/AdminChangePassword.jsx'
 import { LandlordDashboard } from './pages/landlord/LandlordDashboard.jsx';
 import LandlordHomePage from './pages/landlord/LandlordHomePage.jsx';
 import Property from './pages/landlord/Property.jsx';
-import MessageBox from './pages/landlord/MessageBox.jsx';
 import Booking from './pages/landlord/Booking.jsx';
 import SettingBox from './pages/landlord/SettingBox.jsx';
 import Tenant from './pages/landlord/Tenant.jsx';
@@ -39,6 +38,7 @@ import { LandlordForgotPassword } from './pages/landlord/LandlordForgotPassword.
 import { LandlordOtpLogin } from './pages/landlord/LandlordOtpLogin.jsx'
 import { ChatProvider } from './context/ChatContext';
 import { UserProvider } from './context/UserContext';
+import LandlordMessages from './pages/landlord/LandlordMessages.jsx';
 
 
 const router = createBrowserRouter([
@@ -158,7 +158,7 @@ const router = createBrowserRouter([
       },
       {
         path: "messages",
-        element: <MessageBox />
+        element: <LandlordMessages />
       },
       {
         path: "bookings",

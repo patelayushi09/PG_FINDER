@@ -7,9 +7,8 @@ import {
 } from 'lucide-react';
 
 export function Sidebar() {
-  const location = useLocation(); // Get current URL
-  const navigate = useNavigate(); // Navigation hook
-
+  const location = useLocation(); 
+  const navigate = useNavigate(); // ✅ Define navigate at the top
 
   const navItems = [
     { name: 'Dashboard', icon: LayoutDashboardIcon, path: "/tenant-dashboard" },
@@ -19,6 +18,12 @@ export function Sidebar() {
     { name: 'Favorites', icon: Heart, path: "/tenant-dashboard/favorites" },
     { name: 'Settings', icon: Settings, path: "/tenant-dashboard/settings" }
   ];
+
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");  
+    localStorage.removeItem("tenantId");     
+    navigate("/tenant/login");  // ✅ Use navigate here
+  };
 
   return (
     <motion.div
@@ -69,7 +74,7 @@ export function Sidebar() {
         whileTap={{ scale: 0.95 }}
         className="p-4 border-t border-[#D8B258]"
       >
-        <button className="w-full flex items-center px-6 py-3 text-lg font-medium text-[#103538] bg-[#D8B258] rounded-lg transition-all duration-300 hover:bg-[#D96851] hover:text-white shadow-md">
+        <button className="w-full flex items-center px-6 py-3 text-lg font-medium text-[#103538] bg-[#D8B258] rounded-lg transition-all duration-300 hover:bg-[#D96851] hover:text-white shadow-md" onClick={handleLogout}>
           <LogOut className="w-6 h-6 mr-4" />
           Logout
         </button>
@@ -79,4 +84,3 @@ export function Sidebar() {
 }
 
 export default Sidebar;
-

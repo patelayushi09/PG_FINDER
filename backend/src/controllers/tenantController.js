@@ -654,7 +654,6 @@ const updateTenant = async (req, res) => {
 }
 
 
-
 module.exports = {
     tenantLogin,
     tenantSignup,
@@ -672,5 +671,5 @@ module.exports = {
     getTenantDashboard,
     getTenantById,
     updateTenant,
-    
+   
 };
