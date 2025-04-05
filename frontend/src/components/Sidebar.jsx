@@ -22,7 +22,7 @@ export function Sidebar() {
   const handleLogout = () => {
     localStorage.removeItem("accessToken");  
     localStorage.removeItem("tenantId");     
-    navigate("/tenant/login");  // ✅ Use navigate here
+    navigate("/tenant/login");  // Use navigate here
   };
 
   return (

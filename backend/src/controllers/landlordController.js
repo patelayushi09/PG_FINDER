@@ -501,43 +501,67 @@ const getLandlord = async (req, res) => {
 // dashboard data
 const dashboardData = async (req, res) => {
     try {
-        const landlordId = req.params.landlordId; // Get landlordId from request params
+        const landlordId = req.params.landlordId;
 
-        // Validate landlord existence
+        // Validate landlord
         const landlord = await Landlord.findById(landlordId);
         if (!landlord) {
             return res.status(404).json({ error: "Landlord not found" });
         }
 
-        // Fetch total counts
-        const totalProperties = await Property.countDocuments();
+        const now = new Date();
+        const oneMonthAgo = new Date(now);
+        oneMonthAgo.setMonth(now.getMonth() - 1);
+
+        // Current stats (for this landlord only)
+        const totalProperties = await Property.countDocuments({ landlordId });
+        const activeBookings = await Booking.countDocuments({ landlordId, status: "confirmed" });
+
+        // Optional: If you want global stats too
         const totalLandlords = await Landlord.countDocuments();
         const totalTenants = await Tenant.countDocuments();
-        const activeBookings = await Booking.countDocuments({ status: "confirmed" });
 
-        // Fetch previous stats (Example placeholders)
-        const previousStats = {
-            totalProperties: totalProperties - 5,
-            totalLandlords: totalLandlords - 2,
-            totalTenants: totalTenants - 10,
-            activeBookings: activeBookings - 3
-        };
+        // Previous stats (last month)
+        const previousProperties = await Property.countDocuments({
+            landlordId,
+            createdAt: { $lte: oneMonthAgo }
+        });
 
-        // Fetch properties owned by the logged-in landlord and populate city & state
+        const previousBookings = await Booking.countDocuments({
+            landlordId,
+            status: "confirmed",
+            createdAt: { $lte: oneMonthAgo }
+        });
+
+        const previousLandlords = await Landlord.countDocuments({
+            createdAt: { $lte: oneMonthAgo }
+        });
+
+        const previousTenants = await Tenant.countDocuments({
+            createdAt: { $lte: oneMonthAgo }
+        });
+
+        // Properties list
         const properties = await Property.find({ landlordId })
-            .populate("cityId", "name")  // Only fetch the 'name' field
-            .populate("stateId", "name"); // Only fetch the 'name' field
+            .populate("cityId", "name")
+            .populate("stateId", "name");
 
+        // Send response
         res.json({
             success: true,
             data: {
                 stats: {
                     totalProperties,
+                    activeBookings,
                     totalLandlords,
                     totalTenants,
-                    activeBookings
                 },
-                previousStats,
+                previousStats: {
+                    totalProperties: previousProperties,
+                    activeBookings: previousBookings,
+                    totalLandlords: previousLandlords,
+                    totalTenants: previousTenants,
+                },
                 properties
             }
         });
@@ -547,31 +571,32 @@ const dashboardData = async (req, res) => {
     }
 };
 
+
 //getConfirmedTenants 
 const getConfirmedTenants = async (req, res) => {
     try {
         const confirmedBookings = await Booking.find({ status: "confirmed" })
-          .populate("tenantId", "firstName lastName phoneno email")
-          .populate("propertyId", "propertyName");
-    
+            .populate("tenantId", "firstName lastName phoneno email")
+            .populate("propertyId", "propertyName");
+
         if (confirmedBookings.length === 0) {
-          return res.status(404).json({ success: false, message: "No confirmed tenants found" });
+            return res.status(404).json({ success: false, message: "No confirmed tenants found" });
         }
-    
+
         const tenants = confirmedBookings.map((booking) => ({
-          id: booking.tenantId._id,
-          name: `${booking.tenantId.firstName} ${booking.tenantId.lastName}`,
-          contact: booking.tenantId.phoneno,  // Ensure this field exists
-          email: booking.tenantId.email,
-          propertyName: booking.propertyId?.propertyName || "N/A",  // Handle missing property data
-          joinDate: booking.checkInDate.toISOString().split("T")[0], // Format date correctly
+            id: booking.tenantId._id,
+            name: `${booking.tenantId.firstName} ${booking.tenantId.lastName}`,
+            contact: booking.tenantId.phoneno,  // Ensure this field exists
+            email: booking.tenantId.email,
+            propertyName: booking.propertyId?.propertyName || "N/A",  // Handle missing property data
+            joinDate: booking.checkInDate.toISOString().split("T")[0], // Format date correctly
         }));
-    
+
         res.status(200).json({ success: true, tenants });
-      } catch (error) {
+    } catch (error) {
         console.error("Error fetching confirmed tenants:", error);
         res.status(500).json({ success: false, error: "Server error" });
-      }
+    }
 }
 
 
@@ -649,33 +674,33 @@ const updateLandlord = async (req, res) => {
 
 
 // Get properties by landlord ID
-const getPropertyByLandordId= async (req, res) => {
+const getPropertyByLandordId = async (req, res) => {
     try {
         const { landlordId } = req.params;
-        
+
         // Find all properties that belong to this landlord
         const properties = await Property.find({ landlordId }).select('_id propertyName address basePrice description');
-        
+
         if (!properties) {
-          return res.status(404).json({
-            error: true,
-            message: "No properties found for this landlord"
-          });
+            return res.status(404).json({
+                error: true,
+                message: "No properties found for this landlord"
+            });
         }
-        
+
         // Return the properties
         res.status(200).json({
-          error: false,
-          data: properties
+            error: false,
+            data: properties
         });
-      } catch (error) {
+    } catch (error) {
         console.error('Error fetching landlord properties:', error);
         res.status(500).json({
-          error: true,
-          message: "Failed to fetch landlord properties"
+            error: true,
+            message: "Failed to fetch landlord properties"
         });
-      }
-  };
+    }
+};
 
 
 module.exports = {

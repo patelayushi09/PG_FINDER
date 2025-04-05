@@ -18,6 +18,12 @@ export const LandlordSidebar = () => {
         { name: "Tenants", icon: User2Icon, path: "/landlord-dashboard/tenants" },
         { name: "Settings", icon: Settings, path: "/landlord-dashboard/settings" }
     ];
+    const handleLogout = () => {
+        localStorage.removeItem("accessToken");  
+        localStorage.removeItem("tenantId");     
+        navigate("/landlord/login");  // ✅ Use navigate here
+      };
+    
 
     return (
         <motion.div
@@ -64,18 +70,16 @@ export const LandlordSidebar = () => {
 
             {/* Logout Button */}
             <motion.div
-                whileHover={{ scale: 1.05, boxShadow: "0px 4px 10px rgba(216, 178, 88, 0.4)" }}
-                whileTap={{ scale: 0.95 }}
-                className="p-4 border-t border-[#D8B258]"
-            >
-                <button
-                    className="w-full flex items-center px-6 py-3 text-lg font-medium text-[#103538] bg-[#D8B258] rounded-lg transition-all duration-300 hover:bg-[#D96851] hover:text-white shadow-md"
-                    onClick={() => navigate("/logout")}
-                >
-                    <LogOut className="w-6 h-6 mr-4" />
-                    Logout
-                </button>
-            </motion.div>
-        </motion.div>
+                   whileHover={{ scale: 1.05, boxShadow: "0px 4px 10px rgba(216, 178, 88, 0.4)" }}
+                   whileTap={{ scale: 0.95 }}
+                   className="p-4 border-t border-[#D8B258]"
+                 >
+                   <button className="w-full flex items-center px-6 py-3 text-lg font-medium text-[#103538] bg-[#D8B258] rounded-lg transition-all duration-300 hover:bg-[#D96851] hover:text-white shadow-md" onClick={handleLogout}>
+                     <LogOut className="w-6 h-6 mr-4" />
+                     Logout
+                   </button>
+                 </motion.div>
+               </motion.div>
+        
     );
 };

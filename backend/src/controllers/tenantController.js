@@ -523,8 +523,8 @@ const getTenantDashboard = async (req, res) => {
             Landlord.countDocuments(),
             Tenant.countDocuments(),
             Booking.countDocuments({ status: "confirmed" }),
-            Booking.countDocuments(), // Total booking requests
-            Booking.countDocuments({ responded: true }), // Example: Adjust field for response tracking
+            Booking.countDocuments(), 
+            Booking.countDocuments({ status: { $in: ["rejected", "confirmed"] } }), 
             Favorite.countDocuments({ tenantId }), // Count tenant's favorites
         ]);
 
