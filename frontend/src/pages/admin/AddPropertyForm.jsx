@@ -87,49 +87,49 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
     }
   }
 
-  
 
-  
+
+
   const onSubmit = async (data) => {
     if (!selectedLandlord) {
-        alert("Please select a landlord before submitting!");
-        return;
+      alert("Please select a landlord before submitting!");
+      return;
     }
 
     setIsSubmitting(true);
-    
+
     const payload = {
-        ...data,
-        stateId: selectedState,
-        cityId: selectedCity,
-        areaId: selectedArea,
-        landlordId: selectedLandlord,  //  Ensure landlordId is included
-        image: image || "",
+      ...data,
+      stateId: selectedState,
+      cityId: selectedCity,
+      areaId: selectedArea,
+      landlordId: selectedLandlord,  //  Ensure landlordId is included
+      image: image || "",
     };
 
     const token = localStorage.getItem("accessToken");
 
-    
+
 
     try {
-        const res = await axios.post("http://localhost:5000/admin/properties", payload, {
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: token ? `Bearer ${token}` : "",
-            },
-        });
+      const res = await axios.post("http://localhost:5000/admin/properties", payload, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+      });
 
-        console.log("🔹 Response from server:", res.data);
-        onPropertyAdded && onPropertyAdded(res.data);
-        reset();
-        onClose();
+      console.log("🔹 Response from server:", res.data);
+      onPropertyAdded && onPropertyAdded(res.data);
+      reset();
+      onClose();
     } catch (error) {
-        console.error(" Error adding property:", error.response?.data || error.message);
-        alert("Failed to add property. Please try again.");
+      console.error(" Error adding property:", error.response?.data || error.message);
+      alert("Failed to add property. Please try again.");
     } finally {
-        setIsSubmitting(false);
+      setIsSubmitting(false);
     }
-};
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -146,8 +146,8 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#D96851]"></div>
           </div>
         ) : (
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {/* Landlord Selection - New Field */}
+          <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Landlord */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Select Landlord*</label>
               <select
@@ -165,7 +165,7 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
               </select>
             </div>
 
-            {/* Basic Info */}
+            {/* Title */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Title*</label>
               <input
@@ -176,6 +176,7 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
               />
             </div>
 
+            {/* Property Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Property Name*</label>
               <input
@@ -186,6 +187,7 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
               />
             </div>
 
+            {/* Address */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Address*</label>
               <input
@@ -196,111 +198,132 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
               />
             </div>
 
-            {/* Location Dropdowns */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">State*</label>
-                <select
-                  className="w-full p-2 border rounded"
-                  value={selectedState}
-                  onChange={(e) => setSelectedState(e.target.value)}
-                  required
-                >
-                  <option value="">Select State</option>
-                  {states.map((state) => (
-                    <option key={state._id} value={state._id}>
-                      {state.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">City*</label>
-                <select
-                  className="w-full p-2 border rounded"
-                  value={selectedCity}
-                  onChange={(e) => setSelectedCity(e.target.value)}
-                  disabled={!selectedState}
-                  required
-                >
-                  <option value="">Select City</option>
-                  {cities.map((city) => (
-                    <option key={city._id} value={city._id}>
-                      {city.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Area*</label>
-                <select
-                  className="w-full p-2 border rounded"
-                  value={selectedArea}
-                  onChange={(e) => setSelectedArea(e.target.value)}
-                  disabled={!selectedCity}
-                  required
-                >
-                  <option value="">Select Area</option>
-                  {areas.map((area) => (
-                    <option key={area._id} value={area._id}>
-                      {area.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Property Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Base Price*</label>
-                <input
-                  type="number"
-                  placeholder="Base Price"
-                  className="w-full p-2 border rounded"
-                  {...register("basePrice", { required: true })}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Rating</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  min="0"
-                  max="5"
-                  placeholder="Rating (0-5)"
-                  className="w-full p-2 border rounded"
-                  {...register("rating", { required: true, valueAsNumber: true })}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Bedrooms*</label>
-                <input
-                  type="number"
-                  placeholder="Bedrooms"
-                  className="w-full p-2 border rounded"
-                  {...register("bedrooms", { required: true })}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Bathrooms*</label>
-                <input
-                  type="number"
-                  placeholder="Bathrooms"
-                  className="w-full p-2 border rounded"
-                  {...register("bathrooms", { required: true })}
-                />
-              </div>
-            </div>
-
+            {/* State */}
             <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">State*</label>
+              <select
+                className="w-full p-2 border rounded"
+                value={selectedState}
+                onChange={(e) => setSelectedState(e.target.value)}
+                required
+              >
+                <option value="">Select State</option>
+                {states.map((state) => (
+                  <option key={state._id} value={state._id}>
+                    {state.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* City */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">City*</label>
+              <select
+                className="w-full p-2 border rounded"
+                value={selectedCity}
+                onChange={(e) => setSelectedCity(e.target.value)}
+                disabled={!selectedState}
+                required
+              >
+                <option value="">Select City</option>
+                {cities.map((city) => (
+                  <option key={city._id} value={city._id}>
+                    {city.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Area */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Area*</label>
+              <select
+                className="w-full p-2 border rounded"
+                value={selectedArea}
+                onChange={(e) => setSelectedArea(e.target.value)}
+                disabled={!selectedCity}
+                required
+              >
+                <option value="">Select Area</option>
+                {areas.map((area) => (
+                  <option key={area._id} value={area._id}>
+                    {area.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Base Price */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Base Price*</label>
+              <input
+                type="number"
+                placeholder="Base Price"
+                className="w-full p-2 border rounded"
+                {...register("basePrice", { required: true })}
+              />
+            </div>
+
+            {/* Rating */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Rating</label>
+              <input
+                type="number"
+                step="0.1"
+                min="0"
+                max="5"
+                placeholder="Rating (0-5)"
+                className="w-full p-2 border rounded"
+                {...register("rating", { required: true, valueAsNumber: true })}
+              />
+            </div>
+
+            {/* Bedrooms */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Bedrooms*</label>
+              <input
+                type="number"
+                placeholder="Bedrooms"
+                className="w-full p-2 border rounded"
+                {...register("bedrooms", { required: true })}
+              />
+            </div>
+
+            {/* Bathrooms */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Bathrooms*</label>
+              <input
+                type="number"
+                placeholder="Bathrooms"
+                className="w-full p-2 border rounded"
+                {...register("bathrooms", { required: true })}
+              />
+            </div>
+
+            {/* Furnishing */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Furnishing Status*</label>
+              <select className="w-full p-2 border rounded" {...register("furnishingStatus", { required: true })}>
+                <option value="">Select Furnishing</option>
+                <option value="Furnished">Furnished</option>
+                <option value="Unfurnished">Unfurnished</option>
+                <option value="Semi-Furnished">Semi-Furnished</option>
+              </select>
+            </div>
+
+            {/* Availability */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Availability*</label>
+              <select className="w-full p-2 border rounded" {...register("availabilityStatus", { required: true })}>
+                <option value="">Select Status</option>
+                <option value="Available">Available</option>
+                <option value="Rented">Rented</option>
+              </select>
+            </div>
+
+            {/* Description (full width) */}
+            <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">Description*</label>
               <textarea
                 placeholder="Property Description"
@@ -310,29 +333,8 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
               ></textarea>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Furnishing Status*</label>
-                <select className="w-full p-2 border rounded" {...register("furnishingStatus", { required: true })}>
-                  <option value="">Select Furnishing</option>
-                  <option value="Furnished">Furnished</option>
-                  <option value="Unfurnished">Unfurnished</option>
-                  <option value="Semi-Furnished">Semi-Furnished</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Availability*</label>
-                <select className="w-full p-2 border rounded" {...register("availabilityStatus", { required: true })}>
-                  <option value="">Select Status</option>
-                  <option value="Available">Available</option>
-                  <option value="Rented">Rented</option>
-                </select>
-              </div>
-            </div>
-
-            {/* File Upload */}
-            <div>
+            {/* Image Upload (full width) */}
+            <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">Upload Property Image*</label>
               <FileUploaderRegular
                 onChange={handleFileChange}
@@ -352,8 +354,8 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
               )}
             </div>
 
-            {/* Buttons */}
-            <div className="flex justify-end space-x-4 pt-2">
+            {/* Buttons (full width) */}
+            <div className="flex justify-end space-x-4 pt-2 md:col-span-2">
               <button
                 type="button"
                 className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition-colors"
@@ -371,6 +373,7 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
               </button>
             </div>
           </form>
+
         )}
       </div>
     </div>
