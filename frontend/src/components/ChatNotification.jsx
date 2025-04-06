@@ -9,6 +9,7 @@ export default function ChatNotification() {
   const { tenant, landlord } = useUser();
   const navigate = useNavigate(); 
   const [isOpen, setIsOpen] = useState(false);
+  
 
   const totalUnread = Object.values(unreadCounts).reduce((sum, count) => sum + count, 0);
 

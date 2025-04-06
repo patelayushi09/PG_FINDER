@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Send } from "lucide-react";
 import { useChat } from "../../context/ChatContext";
 import { formatDistanceToNow } from "date-fns";
+import axios from "axios";
 
 export default function LandlordMessages() {
   const {
@@ -17,12 +18,22 @@ export default function LandlordMessages() {
 
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef(null);
+  const [propertyName, setPropertyName] = useState(null);
 
-  useEffect(() => {
-    if (Notification.permission !== "granted") {
-      Notification.requestPermission();
+  // useEffect(() => {
+  //   if (Notification.permission !== "granted") {
+  //     Notification.requestPermission();
+  //   }
+  // }, []);
+
+  useEffect(()=>{
+    const fetchPropertyName = async () => {
+      const response = await axios.post("http://localhost:5000/landlord/fetch-property", { propertyId: selectedConversation?.property._id });
+      setPropertyName(response?.data?.propertyName)
     }
-  }, []);
+    fetchPropertyName();
+  },[selectedConversation])
+  
  
 
   useEffect(() => {
@@ -117,7 +128,7 @@ export default function LandlordMessages() {
                       {`${selectedConversation.participants?.tenant?.firstName ?? ""} ${selectedConversation.participants?.tenant?.lastName ?? ""}`}
                     </h2>
                     <p className="text-sm font-medium text-cream">
-                      Property: {selectedConversation.property?.name ?? "Unknown"}
+                      Property: {propertyName ?? "Unknown"}
                     </p>
                   </div>
                 </div>

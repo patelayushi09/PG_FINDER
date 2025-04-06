@@ -571,6 +571,12 @@ const dashboardData = async (req, res) => {
     }
 };
 
+const fetchPropertyName = async (req, res) => {
+    const id = req.body.propertyId;
+    const property = await Property.findById(id);
+    res.status(200).json({propertyName: property?.propertyName})
+}
+
 
 //getConfirmedTenants 
 const getConfirmedTenants = async (req, res) => {
@@ -721,6 +727,7 @@ module.exports = {
     getConfirmedTenants,
     getLandlordById,
     updateLandlord,
-    getPropertyByLandordId
+    getPropertyByLandordId,
+    fetchPropertyName
 
 };

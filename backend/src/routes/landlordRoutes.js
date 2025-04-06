@@ -25,6 +25,8 @@ router.put("/properties/:id",landlordController.updateProperty)
 router.get("/properties/:id",landlordController.getPropertyById)
 router.post("/properties", authenticateToken("landlord"),upload.single("image"), landlordController.addProperty);
 
+router.post("/fetch-property", landlordController.fetchPropertyName)
+
 
 
 router.get('/bookings/:landlordId', landlordController.getLandlordBookings);
