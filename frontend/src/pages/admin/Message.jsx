@@ -286,9 +286,9 @@ export default function Message() {
 
           <div className="grid grid-cols-3 h-[calc(100vh-280px)]">
             {/* Messages Panel */}
-            <div className="col-span-2 flex flex-col h-screen border-r">
+            <div className="col-span-2 flex flex-col h-[calc(100vh-280px)] border-r">
               {/* Main scrollable + sticky footer section */}
-              <div className="flex flex-col flex-1 overflow-hidden">
+              <div className="flex flex-col h-full">
 
                 {/* Scrollable Message Section */}
                 <div className="flex-1 overflow-y-auto p-4 bg-gray-50 min-h-0">
@@ -351,9 +351,10 @@ export default function Message() {
                 </div>
 
                 {/* Sticky Footer */}
-                <div className="text-center p-2 bg-white text-sm shrink-0">
+                <div className="text-center py-4 px-2 bg-white text-sm shrink-0">
                   Admin view - You are viewing this conversation in read-only mode
                 </div>
+
               </div>
             </div>
 

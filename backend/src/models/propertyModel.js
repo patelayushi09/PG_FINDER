@@ -8,10 +8,6 @@ const PropertySchema = new Schema({
     propertyName: {
         type: String,
     },
-    categoryId: {
-        type: Schema.Types.ObjectId,
-        ref: "Category",
-    },
     address: {
         type: String,
     },
