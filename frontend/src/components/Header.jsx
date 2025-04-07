@@ -1,5 +1,4 @@
 
-import { UserCircle } from "lucide-react";
 import ChatNotification from "./ChatNotification";
 import { useEffect, useState } from "react";
 import axios from "axios";
