@@ -7,6 +7,8 @@ const Tenant = require('../models/tenantModel')
 const Landlord = require('../models/landlordModel')
 const Property = require('../models/propertyModel')
 const Booking = require('../models/bookingModel')
+const Message = require('../models/messageModel')
+const City = require('../models/cityModel')
 require('dotenv').config()
 
 
@@ -513,6 +515,241 @@ const getAdminDashboard = async (req, res) => {
     }
 };
 
+
+// Get all conversations across all tenants and landlords
+const getAllConversations = async (req, res) => {
+    try {
+      // Fetch all messages, sorted by most recent
+      const messages = await Message.find({}).sort({ createdAt: -1 });
+  
+      const conversationMap = {};
+  
+      for (const message of messages) {
+        const propertyId = message.propertyId?.toString();
+        if (!propertyId) continue;
+  
+        let tenantId, landlordId;
+  
+        if (message.senderType === "tenant") {
+          tenantId = message.senderId?.toString();
+          landlordId = message.receiverId?.toString();
+        } else {
+          landlordId = message.senderId?.toString();
+          tenantId = message.receiverId?.toString();
+        }
+  
+        // Ensure all keys are valid before proceeding
+        if (!propertyId || !tenantId || !landlordId) continue;
+  
+        const key = `${propertyId}_${tenantId}_${landlordId}`;
+  
+        if (!conversationMap[key]) {
+          conversationMap[key] = {
+            propertyId,
+            tenantId,
+            landlordId,
+            messages: [],
+          };
+        }
+  
+        conversationMap[key].messages.push(message);
+      }
+  
+      // Get detailed conversation info (with messages grouped above)
+      const conversations = await Promise.all(
+        Object.values(conversationMap).map(async (conv) => {
+          return await getConversationDetailsForAdmin(
+            conv.messages,
+            conv.tenantId,
+            conv.landlordId,
+            conv.propertyId
+          );
+        })
+      );
+  
+      // Sort by most recent activity
+      conversations.sort((a, b) => {
+        if (!a.lastActivity) return 1;
+        if (!b.lastActivity) return -1;
+        return new Date(b.lastActivity) - new Date(a.lastActivity);
+      });
+  
+      res.status(200).json({
+        error: false,
+        data: conversations,
+      });
+    } catch (error) {
+      console.error("Error getting all conversations:", error);
+      res.status(500).json({
+        error: true,
+        message: "Failed to get conversations",
+      });
+    }
+  };
+  
+// Helper function to get conversation details for admin view
+const getConversationDetailsForAdmin = async (messages, tenantId, landlordId, propertyId) => {
+    try {
+      const [tenant, landlord, property] = await Promise.all([
+        Tenant.findById(tenantId),
+        Landlord.findById(landlordId),
+        Property.findById(propertyId),
+      ]);
+  
+      // Fetch city name if cityId exists
+      let cityName = null;
+      if (property?.cityId) {
+        const city = await City.findById(property.cityId);
+        cityName = city?.name || null;
+      }
+  
+      const lastMessage = messages.length > 0 ? messages[messages.length - 1] : null;
+  
+      let readByTenant = true;
+      let readByLandlord = true;
+  
+      if (lastMessage) {
+        if (lastMessage.senderType === "landlord") {
+          readByTenant = lastMessage.read;
+        } else if (lastMessage.senderType === "tenant") {
+          readByLandlord = lastMessage.read;
+        }
+      }
+  
+      return {
+        _id: `${propertyId}_${tenantId}_${landlordId}`,
+        participants: {
+          tenant: tenant
+            ? {
+                _id: tenant._id,
+                firstName: tenant.firstName,
+                lastName: tenant.lastName,
+                email: tenant.email,
+                phone: tenant.phoneno,
+                profileImage: tenant.profileImage,
+                createdAt: tenant.createdAt,
+              }
+            : null,
+          landlord: landlord
+            ? {
+                _id: landlord._id,
+                name: landlord.name,
+                email: landlord.email,
+                phone: landlord.phoneno,
+                profileImage: landlord.profileImage,
+                propertyCount: await Property.countDocuments({ landlordId: landlord._id }),
+                createdAt: landlord.createdAt,
+              }
+            : null,
+        },
+        property: property
+          ? {
+              _id: property._id,
+              name: property.propertyName,
+              city: cityName, // ✅ City name
+              basePrice: property.basePrice, // ✅ Rent
+              availabilityStatus: property.availabilityStatus, // ✅ Status
+            }
+          : null,
+        lastMessage: lastMessage
+          ? {
+              content: lastMessage.content,
+              createdAt: lastMessage.createdAt,
+              senderType: lastMessage.senderType,
+              readByTenant,
+              readByLandlord,
+            }
+          : null,
+        messageCount: messages.length,
+        lastActivity: lastMessage ? lastMessage.createdAt : null,
+      };
+    } catch (error) {
+      console.error("Error getting conversation details for admin:", error);
+      throw error;
+    }
+  };
+  
+  
+  
+  // Get conversation statistics for admin dashboard
+  const getConversationStats = async (req, res) => {
+    try {
+      // Get total number of messages
+      const totalMessages = await Message.countDocuments({})
+  
+      // Get messages from the last 30 days
+      const thirtyDaysAgo = new Date()
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+      const recentMessages = await Message.countDocuments({
+        createdAt: { $gte: thirtyDaysAgo },
+      })
+  
+      // Get unread messages count
+      const unreadMessages = await Message.countDocuments({ read: false })
+  
+      // Get count of active conversations (with messages in the last 7 days)
+      const sevenDaysAgo = new Date()
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+  
+      const recentMessagesByConversation = await Message.aggregate([
+        {
+          $match: {
+            createdAt: { $gte: sevenDaysAgo },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              propertyId: "$propertyId",
+              tenantId: {
+                $cond: [{ $eq: ["$senderType", "tenant"] }, "$senderId", "$receiverId"],
+              },
+              landlordId: {
+                $cond: [{ $eq: ["$senderType", "landlord"] }, "$senderId", "$receiverId"],
+              },
+            },
+          },
+        },
+        {
+          $count: "activeConversations",
+        },
+      ])
+  
+      const activeConversations =
+        recentMessagesByConversation.length > 0 ? recentMessagesByConversation[0].activeConversations : 0
+  
+      res.status(200).json({
+        error: false,
+        data: {
+          totalMessages,
+          recentMessages,
+          unreadMessages,
+          activeConversations,
+        },
+      })
+    } catch (error) {
+      console.error("Error getting conversation stats:", error)
+      res.status(500).json({
+        error: true,
+        message: "Failed to get conversation statistics",
+      })
+    }
+  }
+
+  // in chat fetch property details
+  const fetchPropertyDetails = async (req, res) => {
+      const id = req.body.propertyId;
+      const property = await Property.findById(id);
+      res.status(200).json({
+        data: {
+          propertyName: property?.propertyName,
+          city: property?.cityId?.name,
+          basePrice: property?.basePrice,
+          availabilityStatus: property?.availabilityStatus,
+        }
+      });
+  }
+
 module.exports = {
     adminLogin,
     sendOTP,
@@ -529,5 +766,8 @@ module.exports = {
     updateProperty,
     deleteProperty,
     getLandlords,
-    getAdminDashboard
+    getAdminDashboard,
+    getAllConversations,
+    getConversationStats,
+    fetchPropertyDetails
 }

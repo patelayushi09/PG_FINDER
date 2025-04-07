@@ -11,7 +11,7 @@ router.get("/tenant/:tenantId/conversations", messageController.getTenantConvers
 router.get("/landlord/:landlordId/conversations", messageController.getLandlordConversations)
 
 // Get messages for a specific conversation
-router.get("/conversations/:conversationId", messageController.getConversationMessages)
+router.post("/conversations/:conversationId", messageController.getConversationMessages)
 
 // Create a new message
 router.post("/", messageController.createMessage)

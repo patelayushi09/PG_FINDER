@@ -29,4 +29,15 @@ router.get("/landlords", adminController.getLandlords);
 
 router.get("/dashboard", adminController.getAdminDashboard)
 
+
+router.get("/conversations",adminController.getAllConversations)
+router.get("/conversation-stats",adminController.getConversationStats)
+router.get("/fetch-property",adminController.fetchPropertyDetails)
+
+
 module.exports = router
+
+
+
+
+
