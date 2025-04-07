@@ -1,9 +1,34 @@
 
 import { UserCircle } from "lucide-react";
 import ChatNotification from "./ChatNotification";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export function Header() {
   const tenantId = localStorage.getItem("tenantId");
+
+  const [tenantData, setTenantData] = useState(null)
+  
+  useEffect(() => {
+    fetchTenantData()
+  }, [])
+
+  const fetchTenantData = async () => {
+    try {
+      const token = localStorage.getItem("accessToken")
+      const tenantId = localStorage.getItem("tenantId")
+
+      const response = await axios.get(`http://localhost:5000/tenant/${tenantId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+
+      const tenantData = response.data.data
+      setTenantData(tenantData)
+
+    } catch (error) {
+      console.error("Error fetching tenant data:", error)
+    }
+  }
 
   let userData = { firstName: "Guest", lastName: "" };
 
@@ -23,7 +48,7 @@ export function Header() {
       <div className="flex items-center justify-between px-8 py-4">
         {/* Welcome Message */}
         <h2 className="text-xl font-semibold text-[#103538]">
-          Welcome back, {userData ? `${userData.firstName} ${userData.lastName}` : "Guest"}!
+          Welcome back, {tenantData ? `${tenantData.firstName} ${tenantData.lastName}` : "Guest"}!
         </h2>
 
         {/* User Section */}
@@ -34,11 +59,11 @@ export function Header() {
           </div>
 
           {/* User Profile Icon */}
-          <UserCircle className="w-8 h-8 text-[#759B87]" />
+          <img src={tenantData?.profileImage} className="w-8 h-8 rounded-full object-cover"/>
 
           {/* User Name */}
           <p className="text-sm font-bold text-[#1c5b37]">
-            {userData ? `${userData.firstName} ${userData.lastName}` : "Guest"}
+            {tenantData ? `${tenantData.firstName} ${tenantData.lastName}` : "Guest"}
           </p>
         </div>
       </div>
