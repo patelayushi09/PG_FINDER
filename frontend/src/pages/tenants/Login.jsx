@@ -42,7 +42,7 @@ export const Login = () => {
          
         });
         setTimeout(()=>{
-          navigate("/tenant-dashboard");
+          navigate("/tenant/tenant-dashboard");
         },3000)
         
       } else {

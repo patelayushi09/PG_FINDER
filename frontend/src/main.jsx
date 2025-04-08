@@ -45,30 +45,34 @@ import { HomePage } from './pages/tenants/HomePage.jsx';
 const router = createBrowserRouter([
   {
     path: "/",
+    element: <HomePage/>,
+  },
+  {
+    path: "/tenant",
     element: <App />,
     children: [
       {
-        path: "/tenant-dashboard",
+        path: "/tenant/tenant-dashboard",
         element: <Dashboard />
       },
       {
-        path: "/tenant-dashboard/search-pg",
+        path: "/tenant/tenant-dashboard/search-pg",
         element: <SearchPG />
       },
       {
-        path: "/tenant-dashboard/messages",
+        path: "/tenant/tenant-dashboard/messages",
         element: <Messages />
       },
       {
-        path: "/tenant-dashboard/favorites",
+        path: "/tenant/tenant-dashboard/favorites",
         element: <Favorites />
       },
       {
-        path: "/tenant-dashboard/my-bookings",
+        path: "/tenant/tenant-dashboard/my-bookings",
         element: <MyBookings />
       },
       {
-        path: "/tenant-dashboard/settings",
+        path: "/tenant/tenant-dashboard/settings",
         element: <Settings />
       },
 
@@ -195,10 +199,6 @@ const router = createBrowserRouter([
     path: "/landlord/reset-password",
     element: <LandlordChangePassword />
   },
-  {
-    path:"/homepage",
-    element:<HomePage/>
-  }
 ])
 
 

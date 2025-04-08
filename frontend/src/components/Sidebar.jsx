@@ -11,12 +11,12 @@ export function Sidebar() {
   const navigate = useNavigate(); // ✅ Define navigate at the top
 
   const navItems = [
-    { name: 'Dashboard', icon: LayoutDashboardIcon, path: "/tenant-dashboard" },
-    { name: 'Search PG', icon: Search, path: "/tenant-dashboard/search-pg" },
-    { name: 'My Bookings', icon: Calendar, path: "/tenant-dashboard/my-bookings" },
-    { name: 'Messages', icon: MessageSquare, path: "/tenant-dashboard/messages" },
-    { name: 'Favorites', icon: Heart, path: "/tenant-dashboard/favorites" },
-    { name: 'Settings', icon: Settings, path: "/tenant-dashboard/settings" }
+    { name: 'Dashboard', icon: LayoutDashboardIcon, path: "/tenant/tenant-dashboard" },
+    { name: 'Search PG', icon: Search, path: "/tenant/tenant-dashboard/search-pg" },
+    { name: 'My Bookings', icon: Calendar, path: "/tenant/tenant-dashboard/my-bookings" },
+    { name: 'Messages', icon: MessageSquare, path: "/tenant/tenant-dashboard/messages" },
+    { name: 'Favorites', icon: Heart, path: "/tenant/tenant-dashboard/favorites" },
+    { name: 'Settings', icon: Settings, path: "/tenant/tenant-dashboard/settings" }
   ];
 
   const handleLogout = () => {
