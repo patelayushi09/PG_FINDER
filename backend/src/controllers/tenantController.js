@@ -523,8 +523,8 @@ const getTenantDashboard = async (req, res) => {
             Landlord.countDocuments(),
             Tenant.countDocuments(),
             Booking.countDocuments({ status: "confirmed" }),
-            Booking.countDocuments(), 
-            Booking.countDocuments({ status: { $in: ["rejected", "confirmed"] } }), 
+            Booking.countDocuments(),
+            Booking.countDocuments({ status: { $in: ["rejected", "confirmed"] } }),
             Favorite.countDocuments({ tenantId }), // Count tenant's favorites
         ]);
 
@@ -654,6 +654,46 @@ const updateTenant = async (req, res) => {
 }
 
 
+//home page msg send
+const sendContactMessage = async (req, res) => {
+    const { name, email, message } = req.body;
+
+    if (!name || !email || !message) {
+        return res.status(400).json({ error: "All fields are required." });
+    }
+
+    try {
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.PASS_KEY,
+            },
+        });
+
+        const mailOptions = {
+            from: `"PG Finder" <${process.env.EMAIL_USER}>`,
+            to: email, // 👈 Send the email to the sender
+            subject: "Thanks for Contacting PG Finder!",
+            html: `
+          <p>Hi <strong>${name}</strong>,</p>
+          <p>Thanks for reaching out to us. We have received your message:</p>
+          <blockquote>${message}</blockquote>
+          <p>We'll get back to you shortly.</p>
+          <br/>
+          <p>– The PG Finder Team</p>
+        `,
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        res.status(200).json({ message: "Confirmation email sent to sender!" });
+    } catch (error) {
+        console.error("Email send error:", error);
+        res.status(500).json({ error: "Failed to send email." });
+    }
+};
+
 module.exports = {
     tenantLogin,
     tenantSignup,
@@ -671,5 +711,5 @@ module.exports = {
     getTenantDashboard,
     getTenantById,
     updateTenant,
-   
+    sendContactMessage,
 };

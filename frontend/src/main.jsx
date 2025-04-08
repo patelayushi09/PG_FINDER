@@ -39,6 +39,7 @@ import { LandlordOtpLogin } from './pages/landlord/LandlordOtpLogin.jsx'
 import { ChatProvider } from './context/ChatContext';
 import { UserProvider } from './context/UserContext';
 import LandlordMessages from './pages/landlord/LandlordMessages.jsx';
+import { HomePage } from './pages/tenants/HomePage.jsx';
 
 
 const router = createBrowserRouter([
@@ -194,6 +195,10 @@ const router = createBrowserRouter([
     path: "/landlord/reset-password",
     element: <LandlordChangePassword />
   },
+  {
+    path:"/homepage",
+    element:<HomePage/>
+  }
 ])
 
 

@@ -30,5 +30,5 @@ router.get("/dashboard/:tenantId",authenticateToken("tenant"),tenantController.g
 router.get("/:tenantId", authenticateToken("tenant"), tenantController.getTenantById)
 router.put("/:tenantId", authenticateToken("tenant"), tenantController.updateTenant)
 
-
+router.post("/contact",tenantController.sendContactMessage)
 module.exports = router
