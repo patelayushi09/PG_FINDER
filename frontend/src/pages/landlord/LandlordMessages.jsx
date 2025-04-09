@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Send } from "lucide-react";
 import { useChat } from "../../context/ChatContext";
-import { formatDistanceToNow } from "date-fns";
+import moment from "moment";
 import axios from "axios";
 
 export default function LandlordMessages() {
@@ -160,7 +160,8 @@ export default function LandlordMessages() {
                         >
                           <p>{message.content}</p>
                           <span className="text-xs opacity-70 block mt-1">
-                            {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
+                            {/* {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })} */}
+                             {moment(message?.createdAt).calendar()}
                           </span>
                         </div>
                       </div>

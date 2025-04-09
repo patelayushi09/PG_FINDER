@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react"
 import { Send, ChevronDown } from "lucide-react"
 import axios from "axios"
-import { formatDistanceToNow } from "date-fns"
+import moment from "moment"
+
 
 const API_BASE_URL = "http://localhost:5000"
 
@@ -494,7 +495,8 @@ export default function Messages() {
                             >
                               <p>{message.content}</p>
                               <span className="text-xs opacity-70 block mt-1">
-                                {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
+                                {/* {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })} */}
+                                {moment(message?.createdAt).calendar()}
                               </span>
                             </div>
                           </div>
