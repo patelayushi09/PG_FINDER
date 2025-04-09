@@ -4,6 +4,7 @@ import { useChat } from "../../context/ChatContext";
 import moment from "moment";
 import axios from "axios";
 
+
 export default function LandlordMessages() {
   const {
     conversations = [],
@@ -26,15 +27,15 @@ export default function LandlordMessages() {
   //   }
   // }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     const fetchPropertyName = async () => {
       const response = await axios.post("http://localhost:5000/landlord/fetch-property", { propertyId: selectedConversation?.property._id });
       setPropertyName(response?.data?.propertyName)
     }
     fetchPropertyName();
-  },[selectedConversation])
-  
- 
+  }, [selectedConversation])
+
+
 
   useEffect(() => {
     // Auto-scroll to bottom on new messages
@@ -77,9 +78,8 @@ export default function LandlordMessages() {
                 <button
                   key={conversation._id}
                   onClick={() => selectConversation(conversation)}
-                  className={`w-full p-4 flex items-center hover:bg-gray-50 border-b ${
-                    selectedConversation?._id === conversation._id ? "bg-gray-100" : ""
-                  }`}
+                  className={`w-full p-4 flex items-center hover:bg-gray-50 border-b ${selectedConversation?._id === conversation._id ? "bg-gray-100" : ""
+                    }`}
                 >
                   <div className="h-12 w-12 bg-[#759B87] rounded-full flex items-center justify-center text-white font-bold">
                     {`${conversation.participants?.tenant?.firstName?.charAt(0) ?? ""}${conversation.participants?.tenant?.lastName?.charAt(0) ?? ""}`}
@@ -152,16 +152,15 @@ export default function LandlordMessages() {
                         className={`mb-4 flex ${message.senderType === "landlord" ? "justify-end" : "justify-start"}`}
                       >
                         <div
-                          className={`max-w-[70%] p-3 rounded-lg ${
-                            message.senderType === "landlord"
+                          className={`max-w-[70%] p-3 rounded-lg ${message.senderType === "landlord"
                               ? "bg-[#103538] text-white"
                               : "bg-white border border-gray-200"
-                          }`}
+                            }`}
                         >
                           <p>{message.content}</p>
                           <span className="text-xs opacity-70 block mt-1">
                             {/* {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })} */}
-                             {moment(message?.createdAt).calendar()}
+                            {moment(message?.createdAt).calendar()}
                           </span>
                         </div>
                       </div>
@@ -172,7 +171,7 @@ export default function LandlordMessages() {
               </div>
 
               {/* Message Input */}
-              <div className="p-4 border-t flex items-center bg-white">
+              {/* <div className="p-4 border-t flex items-center bg-white">
                 <textarea
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
@@ -181,6 +180,30 @@ export default function LandlordMessages() {
                   className="flex-1 border p-2 mx-2 rounded-lg focus:ring-2 focus:ring-[#103538] focus:outline-none resize-none"
                   rows={1}
                 />
+                <button
+                  onClick={handleSendMessage}
+                  disabled={isLoading.sending}
+                  className="bg-[#103538] text-white p-2 rounded-full hover:bg-opacity-90 transition-colors"
+                >
+                  {isLoading.sending ? (
+                    <div className="h-5 w-5 border-t-2 border-b-2 border-white rounded-full animate-spin"></div>
+                  ) : (
+                    <Send className="h-5 w-5" />
+                  )}
+                </button>
+              </div> */}
+              <div className="p-4 border-t flex items-center bg-white">
+                <div className="flex-1 mx-2">
+                  <InputEmoji
+                    value={newMessage || ""}
+                    onChange={(value) => setNewMessage(value || "")}
+                    onEnter={handleSendMessage}
+                    placeholder="Type a message..."
+                    fontFamily="nunito"
+                    borderColor="rgba(72,112,223,0.2)"
+                  />
+                </div>
+
                 <button
                   onClick={handleSendMessage}
                   disabled={isLoading.sending}

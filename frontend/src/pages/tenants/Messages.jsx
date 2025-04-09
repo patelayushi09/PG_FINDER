@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react"
 import { Send, ChevronDown } from "lucide-react"
 import axios from "axios"
 import moment from "moment"
-
+import InputEmoji from "react-input-emoji"
 
 const API_BASE_URL = "http://localhost:5000"
 
@@ -361,9 +361,8 @@ export default function Messages() {
                   <button
                     key={landlord._id}
                     onClick={() => selectLandlord(landlord)}
-                    className={`w-full p-4 flex items-center hover:bg-gray-50 border-b ${
-                      selectedLandlord?._id === landlord._id ? "bg-gray-100" : ""
-                    }`}
+                    className={`w-full p-4 flex items-center hover:bg-gray-50 border-b ${selectedLandlord?._id === landlord._id ? "bg-gray-100" : ""
+                      }`}
                   >
                     <div className="h-8 w-8 bg-[#759B87] rounded-full flex items-center justify-center text-white">
                       {landlord.name.substring(0, 2).toUpperCase()}
@@ -373,10 +372,10 @@ export default function Messages() {
                       {conversations.some(
                         (conv) => conv.participants.landlord._id === landlord._id && conv.unreadCount > 0,
                       ) && (
-                        <span className="inline-block bg-[#103538] text-white text-xs px-2 py-1 rounded-full ml-2">
-                          New
-                        </span>
-                      )}
+                          <span className="inline-block bg-[#103538] text-white text-xs px-2 py-1 rounded-full ml-2">
+                            New
+                          </span>
+                        )}
                     </div>
                   </button>
                 ))
@@ -415,9 +414,8 @@ export default function Messages() {
                                       <button
                                         key={property._id}
                                         onClick={() => changeProperty(property)}
-                                        className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-100 ${
-                                          selectedProperty._id === property._id ? "bg-gray-50 font-medium" : ""
-                                        }`}
+                                        className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-100 ${selectedProperty._id === property._id ? "bg-gray-50 font-medium" : ""
+                                          }`}
                                       >
                                         {property.propertyName || property.name}
                                         {property.hasConversation && (
@@ -487,11 +485,10 @@ export default function Messages() {
                             className={`mb-4 flex ${message.senderType === "tenant" ? "justify-end" : "justify-start"}`}
                           >
                             <div
-                              className={`max-w-[70%] rounded-lg p-3 ${
-                                message.senderType === "tenant"
-                                  ? "bg-[#103538] text-white"
-                                  : "bg-gray-200 text-gray-800"
-                              }`}
+                              className={`max-w-[70%] rounded-lg p-3 ${message.senderType === "tenant"
+                                ? "bg-[#103538] text-white"
+                                : "bg-gray-200 text-gray-800"
+                                }`}
                             >
                               <p>{message.content}</p>
                               <span className="text-xs opacity-70 block mt-1">
@@ -506,7 +503,7 @@ export default function Messages() {
                     )}
                   </div>
 
-                  <div className="p-3 border-t flex items-center">
+                  {/* <div className="p-3 border-t flex items-center">
                     <textarea
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
@@ -516,6 +513,32 @@ export default function Messages() {
                       rows={1}
                       disabled={!selectedProperty}
                     />
+
+                    <button
+                      onClick={handleSendMessage}
+                      disabled={loading.sending || !selectedProperty || !newMessage.trim()}
+                      className="bg-[#103538] text-white p-2 rounded-full hover:bg-opacity-90 transition-colors disabled:opacity-50"
+                    >
+                      {loading.sending ? (
+                        <div className="h-5 w-5 border-t-2 border-b-2 border-white rounded-full animate-spin"></div>
+                      ) : (
+                        <Send className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div> */}
+                  <div className="p-3 border-t flex items-center">
+                    <div className="flex-1 mx-2">
+                      <InputEmoji
+                        value={newMessage || ""}
+                        onChange={(value) => setNewMessage(value || "")}
+                        cleanOnEnter={false}
+                        onEnter={handleSendMessage}
+                        fontFamily="nunito"
+                        borderColor="rgba(72,112,223,0.2)"
+                        placeholder="Type a message..."
+                        disabled={!selectedProperty}
+                      />
+                    </div>
 
                     <button
                       onClick={handleSendMessage}
