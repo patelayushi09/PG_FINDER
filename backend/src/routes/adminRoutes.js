@@ -34,7 +34,7 @@ router.get("/conversations",adminController.getAllConversations)
 router.get("/conversation-stats",adminController.getConversationStats)
 router.get("/fetch-property",adminController.fetchPropertyDetails)
 
-
+router.post("/conversations/:conversationId", adminController.getConversationMessages)
 module.exports = router
 
 

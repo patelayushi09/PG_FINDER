@@ -115,7 +115,7 @@ export default function ChatNotification() {
                 }
               
                 if (tenant) {
-                  navigate("/tenant-dashboard/messages");
+                  navigate("/tenant/tenant-dashboard/messages");
                 } else if (landlord) {
                   navigate("/landlord-dashboard/messages");
                 }

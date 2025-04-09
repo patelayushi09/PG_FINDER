@@ -11,7 +11,7 @@ router.get("/tenant/:tenantId/conversations", messageController.getTenantConvers
 router.get("/landlord/:landlordId/conversations", messageController.getLandlordConversations)
 
 // Get messages for a specific conversation
-router.post("/conversations/:conversationId", messageController.getConversationMessages)
+router.get("/conversations/:conversationId", messageController.getConversationMessages)
 
 // Create a new message
 router.post("/", messageController.createMessage)
@@ -20,4 +20,3 @@ router.post("/", messageController.createMessage)
 router.put("/read", messageController.markMessagesAsRead)
 
 module.exports = router
-

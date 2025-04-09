@@ -65,7 +65,7 @@ export default function Message() {
       //  console.log("Extracted propertyId:", propertyId); //debug
 
       const messagesResponse = await axios.post(
-        `${API_BASE_URL}/message/conversations/${conversation._id}`,
+        `${API_BASE_URL}/admin/conversations/${conversation._id}`,
         { propertyId }
       );
       setMessages(messagesResponse.data.data);
@@ -235,12 +235,14 @@ export default function Message() {
                             : "bg-green-100 text-green-800"
                           }`}
                       >
-                        {conversation.lastMessage?.senderType === "tenant" && !conversation.lastMessage?.readByLandlord
-                          ? "Unread by landlord"
-                          : conversation.lastMessage?.senderType === "landlord" &&
-                            !conversation.lastMessage?.readByTenant
-                            ? "Unread by tenant"
-                            : "Read"}
+                        {conversation.lastMessage?.senderType === "tenant" && !conversation.lastMessage?.readByLandlord ? (
+                          "Unread by landlord"
+                        ) : conversation.lastMessage?.senderType === "landlord" && !conversation.lastMessage?.readByTenant ? (
+                          "Unread by tenant"
+                        ) : (
+                          "Read"
+                        )}
+
                       </span>
                     </td>
                   </tr>

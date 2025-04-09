@@ -42,10 +42,10 @@ const getConversationDetails = async (messages, tenantId, landlordId, propertyId
       },
       lastMessage: lastMessage
         ? {
-          content: lastMessage.content,
-          createdAt: lastMessage.createdAt,
-          senderId: lastMessage.senderId,
-        }
+            content: lastMessage.content,
+            createdAt: lastMessage.createdAt,
+            senderId: lastMessage.senderId,
+          }
         : null,
       unreadCount: tenantId ? unreadForTenant : unreadForLandlord,
     }
@@ -56,7 +56,7 @@ const getConversationDetails = async (messages, tenantId, landlordId, propertyId
 }
 
 // Get all conversations for a tenant
-const getTenantConversations = async (req, res) => {
+exports.getTenantConversations = async (req, res) => {
   try {
     const tenantId = req.params.tenantId
 
@@ -109,7 +109,7 @@ const getTenantConversations = async (req, res) => {
 }
 
 // Get all conversations for a landlord
-const getLandlordConversations = async (req, res) => {
+exports.getLandlordConversations = async (req, res) => {
   try {
     const landlordId = req.params.landlordId
 
@@ -162,40 +162,29 @@ const getLandlordConversations = async (req, res) => {
 }
 
 // Get messages for a specific conversation
-const getConversationMessages = async (req, res) => {
+exports.getConversationMessages = async (req, res) => {
   try {
-    const { propertyId: fullPropertyId } = req.body;
-
-    if (!fullPropertyId) {
-      return res.status(400).json({
-        error: true,
-        message: "propertyId is required in the request body.",
-      });
-    }
-
-    const propertyId = fullPropertyId.split("_")[0];
-
-    const property = await Property.findById(propertyId);
+    const conversationId = req.params.conversationId
 
     const messages = await Message.find({
-      propertyId: propertyId,
-    }).sort({ createdAt: 1 });
+      propertyId: conversationId,
+    }).sort({ createdAt: 1 })
 
     res.status(200).json({
       error: false,
       data: messages,
-    });
+    })
   } catch (error) {
-    console.error("Error getting conversation messages:", error);
+    console.error("Error getting conversation messages:", error)
     res.status(500).json({
       error: true,
       message: "Failed to get messages",
-    });
+    })
   }
-};
+}
 
 // Create a new message
-const createMessage = async (req, res) => {
+exports.createMessage = async (req, res) => {
   try {
     const { senderId, receiverId, senderType, receiverType, content, propertyId } = req.body
 
@@ -227,7 +216,7 @@ const createMessage = async (req, res) => {
 }
 
 // Mark messages as read
-const markMessagesAsRead = async (req, res) => {
+exports.markMessagesAsRead = async (req, res) => {
   try {
     const { conversationId, userId, userType } = req.body
 
@@ -255,15 +244,4 @@ const markMessagesAsRead = async (req, res) => {
       message: "Failed to mark messages as read",
     })
   }
-}
-
-
-module.exports = {
-  markMessagesAsRead,
-  createMessage,
-  getConversationMessages,
-  getLandlordConversations,
-  getTenantConversations,
-  getConversationDetails
-
 }

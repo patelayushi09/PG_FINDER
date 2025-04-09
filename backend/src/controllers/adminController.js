@@ -750,6 +750,40 @@ const getConversationDetailsForAdmin = async (messages, tenantId, landlordId, pr
       });
   }
 
+
+  // Get messages for a specific conversation
+const getConversationMessages = async (req, res) => {
+    try {
+      const { propertyId: fullPropertyId } = req.body;
+  
+      if (!fullPropertyId) {
+        return res.status(400).json({
+          error: true,
+          message: "propertyId is required in the request body.",
+        });
+      }
+  
+      const propertyId = fullPropertyId.split("_")[0];
+  
+      const property = await Property.findById(propertyId);
+  
+      const messages = await Message.find({
+        propertyId: propertyId,
+      }).sort({ createdAt: 1 });
+  
+      res.status(200).json({
+        error: false,
+        data: messages,
+      });
+    } catch (error) {
+      console.error("Error getting conversation messages:", error);
+      res.status(500).json({
+        error: true,
+        message: "Failed to get messages",
+      });
+    }
+  };
+  
 module.exports = {
     adminLogin,
     sendOTP,
@@ -769,5 +803,6 @@ module.exports = {
     getAdminDashboard,
     getAllConversations,
     getConversationStats,
-    fetchPropertyDetails
+    fetchPropertyDetails,
+    getConversationMessages
 }
