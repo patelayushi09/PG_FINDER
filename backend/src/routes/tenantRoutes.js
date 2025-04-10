@@ -31,4 +31,6 @@ router.get("/:tenantId", authenticateToken("tenant"), tenantController.getTenant
 router.put("/:tenantId", authenticateToken("tenant"), tenantController.updateTenant)
 
 router.post("/contact",tenantController.sendContactMessage)
+
+router.post("/payment/verify",tenantController.verifyPayment)
 module.exports = router

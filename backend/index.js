@@ -3,13 +3,15 @@ const http = require("http");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const { Server } = require("socket.io");
+const Razorpay = require("razorpay");
+const { options } = require("./src/routes/adminRoutes");
 require("dotenv").config();
 
 const port = process.env.PORT || 5000;
 
 
 const app = express();
-const server = http.createServer(app); 
+const server = http.createServer(app);
 
 app.use(cors());
 app.use(express.json());
@@ -22,7 +24,7 @@ async function main() {
     });
 }
 main().then(() => console.log(" MongoDB connected successfully!"))
-     .catch(err => console.log(" MongoDB Connection Error:", err));
+    .catch(err => console.log(" MongoDB Connection Error:", err));
 
 //  Initialize Socket.IO
 const io = new Server(server, {
@@ -50,7 +52,7 @@ io.on("connection", (socket) => {
     //  Handle message sending
     socket.on("sendMessage", (message) => {
         console.log(" New message received:", message);
-        
+
         const recipient = onlineUsers.find(user => user.userId === message.receiverId);
         if (recipient) {
             io.to(recipient.socketId).emit("getMessage", message);
@@ -77,6 +79,95 @@ io.on("connection", (socket) => {
 app.get("/", (req, res) => {
     res.send("PG_FINDER server is running...");
 });
+
+
+// app.post("/orders", async (req, res) => {
+//     const razorpay = new Razorpay({
+//         key_id: process.env.RAZORPAY_KEY_ID,
+//         key_secret: process.env.RAZORPAY_KEY_SECRET
+//     });
+
+//     const options = {
+//         amount: req.body.amount, 
+//         currency: req.body.currency,
+//         receipt: `receipt_order_${Date.now()}`,
+//         payment_capture: 1
+//     };
+
+//     try {
+//         const response = await razorpay.orders.create(options);
+//         res.json({
+//             order_id: response.id,
+//             currency: response.currency,
+//             amount: response.amount
+//         });
+//     } catch (error) {
+//         console.error("Razorpay Order Creation Error:", error);
+//         res.status(500).send("Internal Server Error");
+//     }
+// });
+
+app.post("/orders", async (req, res) => {
+    console.log("Incoming order data:", req.body); //debug
+    try {
+      const { amount, currency } = req.body;
+  
+      if (!amount || !currency) {
+        return res.status(400).json({ error: "Amount and currency are required" });
+      }
+  
+      const razorpay = new Razorpay({
+        key_id: process.env.RAZORPAY_KEY_ID,
+        key_secret: process.env.RAZORPAY_KEY_SECRET,
+      });
+  
+      const options = {
+        amount: Math.round(req.body.amount),
+        currency: req.body.currency,
+        receipt: `receipt_order_${Date.now()}`,
+        payment_capture: 1,
+      };
+      
+  
+      const order = await razorpay.orders.create(options);
+  
+      res.json({
+        order_id: order.id,
+        currency: order.currency,
+        amount: order.amount,
+      });
+    } catch (error) {
+      console.error("Razorpay Order Creation Error:", error); // Add this to see actual error
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  });
+
+app.get("/payment/:paymentId",async(req,res)=>{
+    const { paymentId } = req.params;  
+    const razorpay = new Razorpay({
+        key_id: process.env.RAZORPAY_KEY_ID,
+        key_secret: process.env.RAZORPAY_KEY_SECRET
+    })
+
+    try {
+        const payment = await razorpay.payments.fetch(paymentId);  // using correct ID
+        if (!payment) {
+            return res.status(404).json({ error: "Payment not found" });
+        }
+
+        res.json({
+            status: payment.status,
+            currency: payment.currency,
+            amount: payment.amount,
+            method: payment.method
+        });
+    } catch (error) {
+        console.error("Error fetching payment:", error);
+        res.status(500).json({ error: "Failed to fetch payment", details: error.message });
+    }
+})
+
+
 
 //  Import & use routes
 app.use("/admin", require("./src/routes/adminRoutes"));

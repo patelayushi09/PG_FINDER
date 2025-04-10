@@ -3,7 +3,8 @@ import { motion } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboardIcon, Search, Calendar, MessageSquare,
-  Heart, Settings, LogOut, Building2
+  Heart, Settings, LogOut, Building2,
+  Currency
 } from 'lucide-react';
 
 export function Sidebar() {
@@ -16,6 +17,7 @@ export function Sidebar() {
     { name: 'My Bookings', icon: Calendar, path: "/tenant/tenant-dashboard/my-bookings" },
     { name: 'Messages', icon: MessageSquare, path: "/tenant/tenant-dashboard/messages" },
     { name: 'Favorites', icon: Heart, path: "/tenant/tenant-dashboard/favorites" },
+    { name: 'Payment Page', icon: Currency, path: "/tenant/tenant-dashboard/payment-page" },
     { name: 'Settings', icon: Settings, path: "/tenant/tenant-dashboard/settings" }
   ];
 

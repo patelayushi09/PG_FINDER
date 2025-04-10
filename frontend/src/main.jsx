@@ -40,12 +40,13 @@ import { ChatProvider } from './context/ChatContext';
 import { UserProvider } from './context/UserContext';
 import LandlordMessages from './pages/landlord/LandlordMessages.jsx';
 import { HomePage } from './pages/tenants/HomePage.jsx';
+import  PaymentPage  from './pages/tenants/PaymentPage.jsx'
 
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <HomePage/>,
+    element: <HomePage />,
   },
   {
     path: "/tenant",
@@ -70,6 +71,10 @@ const router = createBrowserRouter([
       {
         path: "/tenant/tenant-dashboard/my-bookings",
         element: <MyBookings />
+      },
+      {
+        path: "/tenant/tenant-dashboard/payment-page",
+        element: <PaymentPage />
       },
       {
         path: "/tenant/tenant-dashboard/settings",
@@ -128,7 +133,7 @@ const router = createBrowserRouter([
         path: "analytics",
         element: <Analytics />
       },
-      
+
     ]
   },
   {
@@ -199,6 +204,7 @@ const router = createBrowserRouter([
     path: "/landlord/reset-password",
     element: <LandlordChangePassword />
   },
+
 ])
 
 

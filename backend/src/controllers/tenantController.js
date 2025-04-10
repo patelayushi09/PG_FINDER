@@ -1,8 +1,10 @@
 const Tenant = require('../models/tenantModel')
 const bcrypt = require("bcrypt")
 const jwt = require('jsonwebtoken')
-const nodemailer = require('nodemailer');
-const otpModel = require('../models/otpModel');
+const crypto = require('crypto')
+const nodemailer = require('nodemailer')
+const Razorpay = require("razorpay")
+const otpModel = require('../models/otpModel')
 const Property = require('../models/propertyModel')
 const Favorite = require('../models/favoriteModel')
 const Booking = require('../models/bookingModel')
@@ -694,6 +696,46 @@ const sendContactMessage = async (req, res) => {
     }
 };
 
+//verify payment
+const verifyPayment = async (req, res) => {
+    const { bookingId, paymentId, orderId, signature, tenantId } = req.body;
+  
+    try {
+      // Step 1: Generate signature using the Razorpay secret
+      const generatedSignature = crypto
+        .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+        .update(`${orderId}|${paymentId}`)
+        .digest('hex');
+  
+      // Step 2: Compare signatures
+      if (generatedSignature !== signature) {
+        return res.status(400).json({ message: 'Invalid signature. Payment verification failed.' });
+      }
+  
+      // Step 3: Update booking as paid in your database
+      const updatedBooking = await Booking.findByIdAndUpdate(
+        bookingId,
+        {
+          paymentStatus: 'paid',
+          paymentMethod: 'Razorpay',
+          paymentId: paymentId,
+          tenant: tenantId,
+        },
+        { new: true }
+      );
+  
+      if (!updatedBooking) {
+        return res.status(404).json({ message: 'Booking not found' });
+      }
+  
+      res.status(200).json({ message: 'Payment verified successfully', booking: updatedBooking });
+  
+    } catch (error) {
+      console.error('Payment verification error:', error);
+      res.status(500).json({ message: 'Server error during payment verification' });
+    }
+  };
+
 module.exports = {
     tenantLogin,
     tenantSignup,
@@ -712,4 +754,5 @@ module.exports = {
     getTenantById,
     updateTenant,
     sendContactMessage,
+    verifyPayment
 };
