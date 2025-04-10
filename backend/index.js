@@ -4,7 +4,6 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const { Server } = require("socket.io");
 const Razorpay = require("razorpay");
-const { options } = require("./src/routes/adminRoutes");
 require("dotenv").config();
 
 const port = process.env.PORT || 5000;
@@ -80,35 +79,8 @@ app.get("/", (req, res) => {
     res.send("PG_FINDER server is running...");
 });
 
-
-// app.post("/orders", async (req, res) => {
-//     const razorpay = new Razorpay({
-//         key_id: process.env.RAZORPAY_KEY_ID,
-//         key_secret: process.env.RAZORPAY_KEY_SECRET
-//     });
-
-//     const options = {
-//         amount: req.body.amount, 
-//         currency: req.body.currency,
-//         receipt: `receipt_order_${Date.now()}`,
-//         payment_capture: 1
-//     };
-
-//     try {
-//         const response = await razorpay.orders.create(options);
-//         res.json({
-//             order_id: response.id,
-//             currency: response.currency,
-//             amount: response.amount
-//         });
-//     } catch (error) {
-//         console.error("Razorpay Order Creation Error:", error);
-//         res.status(500).send("Internal Server Error");
-//     }
-// });
-
 app.post("/orders", async (req, res) => {
-    console.log("Incoming order data:", req.body); //debug
+    //console.log("Incoming order data:", req.body); //debug
     try {
       const { amount, currency } = req.body;
   
