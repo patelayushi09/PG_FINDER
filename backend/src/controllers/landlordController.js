@@ -6,6 +6,7 @@ const otpModel = require('../models/otpModel');
 const Property = require('../models/propertyModel')
 const Booking = require('../models/bookingModel')
 const Tenant = require('../models/tenantModel')
+const Payment = require('../models/paymentModel')
 require('dotenv').config()
 
 // Landlord signup
@@ -574,7 +575,7 @@ const dashboardData = async (req, res) => {
 const fetchPropertyName = async (req, res) => {
     const id = req.body.propertyId;
     const property = await Property.findById(id);
-    res.status(200).json({propertyName: property?.propertyName})
+    res.status(200).json({ propertyName: property?.propertyName })
 }
 
 
@@ -708,6 +709,50 @@ const getPropertyByLandordId = async (req, res) => {
     }
 };
 
+//get paayment details
+const getLandlordPayments = async (req, res) => {
+    const landlordId = req.params.landlordId;
+    try {
+        console.log("Landlord ID:", landlordId);
+
+        const properties = await Property.find({ landlordId }).select("_id");
+        if (!properties || properties.length === 0) {
+            console.log("No properties found for landlord.");
+            return res.status(200).json({ data: [] });
+        }
+
+        const propertyIds = properties.map((p) => p._id);
+        console.log("Property IDs:", propertyIds);
+
+        const bookings = await Booking.find({ propertyId: { $in: propertyIds } }).select("_id");
+        if (!bookings || bookings.length === 0) {
+            console.log("No bookings found for properties.");
+            return res.status(200).json({ data: [] });
+        }
+
+        const bookingIds = bookings.map((b) => b._id);
+        console.log("Booking IDs:", bookingIds);
+
+        const payments = await Payment.find({
+            bookingId: { $in: bookingIds },
+            status: "completed",
+          }).populate({
+            path: "bookingId",
+            populate: [
+              { path: "propertyId", select: "propertyName image basePrice" },
+              { path: "tenantId", select: "firstName lastName email" },
+              { path: "landlordId", select: "name email" }, 
+            ],
+          });
+
+        console.log("Payments found:", payments.length);
+        res.status(200).json({ data: payments });
+    } catch (error) {
+        console.error("Error fetching landlord payments:", error.message, error.stack);
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
 
 module.exports = {
     landlordSignup,
@@ -728,6 +773,7 @@ module.exports = {
     getLandlordById,
     updateLandlord,
     getPropertyByLandordId,
-    fetchPropertyName
+    fetchPropertyName,
+    getLandlordPayments
 
 };

@@ -3,7 +3,8 @@ import { motion } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
     Home, MessageSquare, LayoutDashboardIcon,
-    Settings, LogOut, Building2, User2Icon, HomeIcon
+    Settings, LogOut, Building2, User2Icon, HomeIcon,
+    CurrencyIcon
 } from "lucide-react";
 
 export const LandlordSidebar = () => {
@@ -16,6 +17,7 @@ export const LandlordSidebar = () => {
         { name: "Messages", icon: MessageSquare, path: "/landlord-dashboard/messages" },
         { name: "Bookings", icon: HomeIcon, path: "/landlord-dashboard/bookings" },
         { name: "Tenants", icon: User2Icon, path: "/landlord-dashboard/tenants" },
+        { name: "Payment", icon: CurrencyIcon, path: "/landlord-dashboard/payments" },
         { name: "Settings", icon: Settings, path: "/landlord-dashboard/settings" }
     ];
     const handleLogout = () => {

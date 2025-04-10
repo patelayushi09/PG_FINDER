@@ -79,6 +79,7 @@ app.get("/", (req, res) => {
     res.send("PG_FINDER server is running...");
 });
 
+//razorpay
 app.post("/orders", async (req, res) => {
     //console.log("Incoming order data:", req.body); //debug
     try {

@@ -43,4 +43,8 @@ router.get("/:landlordId", authenticateToken("landlord"), landlordController.get
 router.put("/:landlordId", authenticateToken("landlord"), landlordController.updateLandlord)
 
 router.get("/:landlordId/properties",landlordController.getPropertyByLandordId)
+
+
+router.get("/payments/:landlordId", landlordController.getLandlordPayments)
+
 module.exports = router

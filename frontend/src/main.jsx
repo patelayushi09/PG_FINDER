@@ -41,6 +41,7 @@ import { UserProvider } from './context/UserContext';
 import LandlordMessages from './pages/landlord/LandlordMessages.jsx';
 import { HomePage } from './pages/tenants/HomePage.jsx';
 import  PaymentPage  from './pages/tenants/PaymentPage.jsx'
+import LandlordPaymentPage from './pages/landlord/LandlordPaymentPage.jsx';
 
 
 const router = createBrowserRouter([
@@ -181,6 +182,10 @@ const router = createBrowserRouter([
       {
         path: "tenants",
         element: <Tenant />
+      },
+      {
+        path: "payments",
+        element: <LandlordPaymentPage />
       }
     ]
   },

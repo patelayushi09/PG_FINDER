@@ -9,6 +9,7 @@ const Property = require('../models/propertyModel')
 const Favorite = require('../models/favoriteModel')
 const Booking = require('../models/bookingModel')
 const Landlord = require('../models/landlordModel')
+const Payment = require('../models/paymentModel')
 require('dotenv').config()
 
 // Tenant signup
@@ -701,38 +702,63 @@ const verifyPayment = async (req, res) => {
     const { bookingId, paymentId, orderId, signature, tenantId } = req.body;
   
     try {
-      // Step 1: Generate signature using the Razorpay secret
       const generatedSignature = crypto
-        .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+        .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
         .update(`${orderId}|${paymentId}`)
-        .digest('hex');
+        .digest("hex");
   
-      // Step 2: Compare signatures
       if (generatedSignature !== signature) {
-        return res.status(400).json({ message: 'Invalid signature. Payment verification failed.' });
+        return res.status(400).json({ message: "Invalid signature." });
       }
   
-      // Step 3: Update booking as paid in your database
-      const updatedBooking = await Booking.findByIdAndUpdate(
-        bookingId,
-        {
-          paymentStatus: 'paid',
-          paymentMethod: 'Razorpay',
-          paymentId: paymentId,
-          tenant: tenantId,
+      // 👇 Proper nested population to get landlord info
+      const booking = await Booking.findById(bookingId).populate({
+        path: "propertyId",
+        populate: {
+          path: "landlordId",
+          model: "Landlord", // Make sure this matches your model registration
+          select: "name email",
         },
-        { new: true }
-      );
+      });
   
-      if (!updatedBooking) {
-        return res.status(404).json({ message: 'Booking not found' });
+      if (!booking) {
+        return res.status(404).json({ message: "Booking not found" });
       }
   
-      res.status(200).json({ message: 'Payment verified successfully', booking: updatedBooking });
+      // Debug log to verify population
+      console.log("Populated Booking:", JSON.stringify(booking, null, 2));
   
+      // Update booking payment info
+      booking.paymentStatus = "paid";
+      booking.paymentMethod = "Razorpay";
+      booking.paymentId = paymentId;
+      booking.tenant = tenantId;
+      await booking.save();
+  
+      // Safely extract landlord name
+      const landlordName = booking?.propertyId?.landlordId?.name || "Landlord";
+    //   console.log("Resolved Landlord Name:", landlordName);
+  
+      // Save Payment record
+      const payment = new Payment({
+        bookingId: booking._id,
+        transactionId: paymentId,
+        amount: booking.totalPrice,
+        paymentDate: new Date(),
+        paymentMethod: "Razorpay",
+        status: "completed",
+        receiverName: landlordName,
+      });
+  
+      await payment.save();
+  
+      res.status(200).json({
+        message: "Payment verified and recorded",
+        booking,
+      });
     } catch (error) {
-      console.error('Payment verification error:', error);
-      res.status(500).json({ message: 'Server error during payment verification' });
+      console.error("Payment verification error:", error);
+      res.status(500).json({ message: "Server error" });
     }
   };
 

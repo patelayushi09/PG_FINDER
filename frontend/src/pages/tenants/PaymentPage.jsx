@@ -158,6 +158,8 @@ export default function PaymentPage() {
             sender: localStorage.getItem("tenantName") || "Tenant",
             receiver: booking.landlordId?.name || "Landlord",
             property: booking.propertyId?.propertyName || "Property",
+            amount: booking.totalAmount
+
         })
     }
 
@@ -240,6 +242,7 @@ export default function PaymentPage() {
                     <p><strong>Sender:</strong> {selectedBookingDetails.sender}</p>
                     <p><strong>Receiver:</strong> {selectedBookingDetails.receiver}</p>
                     <p><strong>Property Name:</strong> {selectedBookingDetails.property}</p>
+                    <p><strong>Amount:</strong>{selectedBookingDetails.amount}</p>
                     <button
                         onClick={() => setSelectedBookingDetails(null)}
                         className="mt-2 text-sm text-red-600 underline"
@@ -254,3 +257,4 @@ export default function PaymentPage() {
    
     )
 }
+
