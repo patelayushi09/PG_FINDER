@@ -1,7 +1,10 @@
 import { useState, useEffect, useRef } from "react"
 import { Mail, Search, User, Home, MapPin, ArrowLeft, IndianRupee, Circle } from "lucide-react"
 import axios from "axios"
-import moment from "moment"
+import { formatDistanceToNow } from 'date-fns'
+
+
+
 
 const API_BASE_URL = "http://localhost:5000"
 
@@ -221,12 +224,11 @@ export default function Message() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {/* {conversation.lastMessage?.createdAt
+                      {conversation.lastMessage?.createdAt
                         ? formatDistanceToNow(new Date(conversation.lastMessage.createdAt), { addSuffix: true })
-                        : "N/A"} */}
-                        {conversation.lastMessage?.createdAt
-                        ?  moment(message?.createdAt).calendar()
-                        : "N/A"}
+                        : "N/A"} 
+                     
+
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
