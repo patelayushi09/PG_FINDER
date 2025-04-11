@@ -19,7 +19,6 @@ import Message from './pages/admin/Message.jsx';
 import Users from './pages/admin/Users.jsx';
 import Properties from './pages/admin/Properties.jsx';
 import AdminHomePage from './pages/admin/AdminHomePage.jsx';
-import Disputes from './pages/admin/Disputes.jsx';
 import Analytics from './pages/admin/Analytics.jsx';
 import { AdminLogin } from './pages/admin/AdminLogin.jsx'
 import AdminForgotPassword from './pages/admin/AdminForgotPassword.jsx'
@@ -125,10 +124,6 @@ const router = createBrowserRouter([
       {
         path: "messages",
         element: <Message />
-      },
-      {
-        path: "disputes",
-        element: <Disputes />
       },
       {
         path: "analytics",

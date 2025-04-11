@@ -17,7 +17,6 @@ const AdminSidebar = () => {
         { name: "Users", icon: User2Icon, path: "/admin-dashboard/users" },
         { name: "Properties", icon: Home, path: "/admin-dashboard/properties" },
         { name: "Messages", icon: MessageSquare, path: "/admin-dashboard/messages" },
-        { name: "Disputes", icon: AlertCircle, path: "/admin-dashboard/disputes" },
         { name: "Analytics", icon: BarChart3, path: "/admin-dashboard/analytics" },
         
     ];
