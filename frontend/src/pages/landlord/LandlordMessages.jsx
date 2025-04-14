@@ -3,7 +3,7 @@ import { Send } from "lucide-react";
 import { useChat } from "../../context/ChatContext";
 import moment from "moment";
 import axios from "axios";
-
+import InputEmoji from "react-input-emoji"
 
 export default function LandlordMessages() {
   const {

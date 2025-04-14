@@ -39,7 +39,7 @@ export const SignUp = () => {
                  
                 });
                 setTimeout(()=>{
-                  navigate("/tenant-dashboard");
+                  navigate("/tenant/tenant-dashboard");
                 },3000)
         setError(response.data.message || 'Signup failed');
       }
