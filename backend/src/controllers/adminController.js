@@ -784,6 +784,44 @@ const getConversationMessages = async (req, res) => {
     }
   };
   
+
+  //analytics
+  const analytics = async (req, res) => {
+    try {
+      // Fetch total number of properties
+      const totalProperties = await Property.countDocuments();
+  
+      // Fetch total number of bookings
+      const totalBookings = await Booking.countDocuments();
+  
+      // Fetch total revenue by summing the amount of all successful payments
+      const totalRevenue = await Booking.aggregate([
+        {
+          $match: { paymentStatus: "paid" }, // Only consider paid bookings
+        },
+        {
+          $group: {
+            _id: null,
+            totalRevenue: { $sum: "$totalAmount" }, // Change totalPrice to totalAmount
+          },
+        },
+      ]);
+  
+      // Ensure the totalRevenue is defined even if no results are found
+      const revenue = totalRevenue[0]?.totalRevenue || 0;
+  
+      res.json({
+        totalProperties,
+        totalBookings,
+        totalRevenue: revenue,
+      });
+    } catch (error) {
+      console.error('Error fetching analytics data:', error);
+      res.status(500).json({ message: 'Error fetching analytics data' });
+    }
+  };
+  
+  
 module.exports = {
     adminLogin,
     sendOTP,
@@ -804,5 +842,6 @@ module.exports = {
     getAllConversations,
     getConversationStats,
     fetchPropertyDetails,
-    getConversationMessages
+    getConversationMessages,
+    analytics
 }

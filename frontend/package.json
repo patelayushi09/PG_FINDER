@@ -12,6 +12,7 @@
   "dependencies": {
     "@uploadcare/react-uploader": "^1.6.0",
     "axios": "^1.8.1",
+    "chart.js": "^4.4.8",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.5.0",
     "lucide-react": "^0.482.0",
@@ -19,6 +20,7 @@
     "prop-types": "^15.8.1",
     "react": "^19.0.0",
     "react-bootstrap": "^2.10.9",
+    "react-chartjs-2": "^5.3.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.2",
     "react-input-emoji": "^5.9.0",
