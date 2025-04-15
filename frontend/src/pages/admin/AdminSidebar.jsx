@@ -3,8 +3,8 @@ import { motion } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
     Home, MessageSquare, LayoutDashboardIcon,
-     Building2,
-    AlertCircle, BarChart3, User2Icon
+    Building2,
+    LogOut, BarChart3, User2Icon
 } from "lucide-react";
 
 const AdminSidebar = () => {
@@ -18,8 +18,13 @@ const AdminSidebar = () => {
         { name: "Properties", icon: Home, path: "/admin-dashboard/properties" },
         { name: "Messages", icon: MessageSquare, path: "/admin-dashboard/messages" },
         { name: "Analytics", icon: BarChart3, path: "/admin-dashboard/analytics" },
-        
+
     ];
+    const handleLogout = () => {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("tenantId");
+        navigate("/admin/login");  //  Use navigate here
+    };
 
     return (
         <motion.div
@@ -63,7 +68,17 @@ const AdminSidebar = () => {
                     </Link>
                 ))}
             </nav>
-
+            {/* Logout Button */}
+            <motion.div
+                whileHover={{ scale: 1.05, boxShadow: "0px 4px 10px rgba(216, 178, 88, 0.4)" }}
+                whileTap={{ scale: 0.95 }}
+                className="p-4 border-t border-[#D8B258]"
+            >
+                <button className="w-full flex items-center px-6 py-3 text-lg font-medium text-[#103538] bg-[#D8B258] rounded-lg transition-all duration-300 hover:bg-[#D96851] hover:text-white shadow-md" onClick={handleLogout}>
+                    <LogOut className="w-6 h-6 mr-4" />
+                    Logout
+                </button>
+            </motion.div>
 
         </motion.div>
     );

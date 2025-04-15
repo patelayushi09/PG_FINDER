@@ -59,10 +59,7 @@ const PropertySchema = new Schema({
         type: String,
     },
     rating: {
-        type: Number,
-        min: 0,
-        max: 5,
-        default: 0
+        type:String
     },
 });
 
