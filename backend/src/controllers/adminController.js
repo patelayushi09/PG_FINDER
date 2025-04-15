@@ -336,16 +336,16 @@ const addProperty = async (req, res) => {
 
     try {
 
-        const { title, propertyName, address, stateId, cityId, areaId, bedrooms, bathrooms, rating, description, basePrice, furnishingStatus, availabilityStatus, image } = req.body;
+        const { title, propertyName, address, stateId, cityId,landlordId, areaId, bedrooms, bathrooms, rating, description, basePrice, furnishingStatus, availabilityStatus, image } = req.body;
 
-        if (!req.user.landlordId) {
+        if (!req.user.adminId) {
             return res.status(403).json({ error: true, message: "Unauthorized - landlordId missing" });
         }
 
         const newProperty = new Property({
             title,
             propertyName,
-            landlordId: req.user.landlordId, // Ensure this is available
+            landlordId, // Ensure this is available
             address,
             stateId,
             cityId,

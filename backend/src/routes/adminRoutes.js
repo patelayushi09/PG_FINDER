@@ -23,7 +23,7 @@ router.get("/properties",adminController.getProperties)
 router.delete("/properties/:id",adminController.deleteProperty)
 router.put("/properties/:id",adminController.updateProperty)
 router.get("/properties/:id",adminController.getPropertyById)
-router.post("/properties",authenticateToken("landlord"),adminController.addProperty)
+router.post("/properties",authenticateToken("admin"),adminController.addProperty)
 
 router.get("/landlords", adminController.getLandlords);
 

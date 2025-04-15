@@ -14,7 +14,7 @@ const authenticateToken = (requiredRole) => {
             if (err) {
                 return res.status(403).json({ error: true, message: "Invalid token" });
             }
-            // console.log("Decoded User:", user); // Debugging line
+            console.log("Decoded User:", user); // Debugging line
             // console.log("Expected Role:", requiredRole);// Debugging line
 
             if (user.role !== requiredRole) {

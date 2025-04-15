@@ -89,7 +89,6 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
 
 
 
-
   const onSubmit = async (data) => {
     if (!selectedLandlord) {
       alert("Please select a landlord before submitting!");
