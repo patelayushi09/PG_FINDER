@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react"
-import axios from "axios"
-import BookingCard from "../../components/BookingCard"
-import { ToastContainer, toast } from "react-toastify"
-import "react-toastify/dist/ReactToastify.css"
+import { useEffect, useState } from "react";
+import axios from "axios";
+import BookingCard from "../../components/BookingCard";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function PaymentPage() {
-    const [bookings, setBookings] = useState([])
-    const [loading, setLoading] = useState(true)
-    const [selectedBookingDetails, setSelectedBookingDetails] = useState(null)
-    const [paymentId, setPaymentId] = useState("")
-    const tenantId = localStorage.getItem("tenantId")
+    const [bookings, setBookings] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [selectedBookingDetails, setSelectedBookingDetails] = useState(null);
+    const [paymentId, setPaymentId] = useState("");
+    const tenantId = localStorage.getItem("tenantId");
 
     useEffect(() => {
         const fetchConfirmedBookings = async () => {
@@ -47,7 +47,6 @@ export default function PaymentPage() {
         }
     }, [tenantId]);
 
-
     const handleDeleteBooking = (bookingId) => {
         const booking = bookings.find(b => b._id === bookingId);
         if (booking?.paymentStatus === "paid") {
@@ -60,34 +59,33 @@ export default function PaymentPage() {
         localStorage.setItem("confirmedBookings", JSON.stringify(updatedBookings));
     };
 
-
     const loadScript = (src) => {
         return new Promise((resolve) => {
-            const script = document.createElement("script")
-            script.src = src
-            script.onload = () => resolve(true)
-            script.onerror = () => resolve(false)
-            document.body.appendChild(script)
-        })
-    }
+            const script = document.createElement("script");
+            script.src = src;
+            script.onload = () => resolve(true);
+            script.onerror = () => resolve(false);
+            document.body.appendChild(script);
+        });
+    };
 
     const handlePayment = async (booking) => {
         if (booking.paymentStatus === "paid") {
-            toast.info("Payment already completed for this booking.")
-            return
+            toast.info("Payment already completed for this booking.");
+            return;
         }
 
         try {
-            const res = await loadScript("https://checkout.razorpay.com/v1/checkout.js")
+            const res = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
             if (!res) {
-                toast.error("Failed to load Razorpay SDK")
-                return
+                toast.error("Failed to load Razorpay SDK");
+                return;
             }
 
             const orderResponse = await axios.post(`http://localhost:5000/orders`, {
                 amount: Math.round(booking.totalAmount * 100),
                 currency: "INR",
-            })
+            });
 
             const options = {
                 key: import.meta.env.VITE_RAZORPAY_KEY_ID,
@@ -98,7 +96,7 @@ export default function PaymentPage() {
                 order_id: orderResponse.data.order_id,
                 handler: async (response) => {
                     try {
-                        setPaymentId(response.razorpay_payment_id)
+                        setPaymentId(response.razorpay_payment_id);
 
                         await axios.post(`http://localhost:5000/tenant/payment/verify`, {
                             bookingId: booking._id,
@@ -106,7 +104,7 @@ export default function PaymentPage() {
                             orderId: response.razorpay_order_id,
                             signature: response.razorpay_signature,
                             tenantId,
-                        })
+                        });
 
                         setBookings(
                             bookings.map((b) =>
@@ -114,12 +112,12 @@ export default function PaymentPage() {
                                     ? { ...b, paymentStatus: "paid", paymentMethod: "Razorpay", paymentId: response.razorpay_payment_id }
                                     : b
                             )
-                        )
+                        );
 
-                        toast.success("Payment successful!")
+                        toast.success("Payment successful!");
                     } catch (error) {
-                        console.error("Payment verification failed:", error)
-                        toast.error("Payment verification failed. Please contact support.")
+                        console.error("Payment verification failed:", error);
+                        toast.error("Payment verification failed. Please contact support.");
                     }
                 },
                 prefill: {
@@ -130,26 +128,26 @@ export default function PaymentPage() {
                 theme: {
                     color: "#103538",
                 },
-            }
+            };
 
-            const paymentObject = new window.Razorpay(options)
-            paymentObject.open()
+            const paymentObject = new window.Razorpay(options);
+            paymentObject.open();
         } catch (error) {
-            console.error("Error initiating payment:", error)
-            toast.error("Failed to initiate payment. Please try again.")
+            console.error("Error initiating payment:", error);
+            toast.error("Failed to initiate payment. Please try again.");
         }
-    }
+    };
 
     const verifyPaymentStatus = async (paymentId) => {
         try {
-            const response = await axios.get(`http://localhost:5000/payment/${paymentId}`)
+            const response = await axios.get(`http://localhost:5000/payment/${paymentId}`);
             if (response.data.status === "captured" || response.data.status === "authorized") {
-                toast.success(`Payment verified: ${response.data.status}`)
+                toast.success(`Payment verified: ${response.data.status}`);
             }
         } catch (error) {
-            console.error("Error verifying payment:", error)
+            console.error("Error verifying payment:", error);
         }
-    }
+    };
 
     const showPaymentDetails = (booking) => {
         setSelectedBookingDetails({
@@ -159,9 +157,8 @@ export default function PaymentPage() {
             receiver: booking.landlordId?.name || "Landlord",
             property: booking.propertyId?.propertyName || "Property",
             amount: booking.totalAmount
-
-        })
-    }
+        });
+    };
 
     return (
         <div className="space-y-6 p-8 bg-cream/10 min-h-screen flex-1">
@@ -254,7 +251,5 @@ export default function PaymentPage() {
 
             <ToastContainer position="top-right" autoClose={3000} />
         </div>
-   
-    )
+    );
 }
-

@@ -114,7 +114,7 @@ function SearchPG() {
             <div key={property._id || property.id}>
               <PropertyCard
                 {...property}
-                isFavorited={false}
+                isFavorited={favoriteIds.has(property._id || property.id)}
                 onFavorite={handleFavoriteUpdate}
                 onImageClick={() => handleImageClick(property)}
               />

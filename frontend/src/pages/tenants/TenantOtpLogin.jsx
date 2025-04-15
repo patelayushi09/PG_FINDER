@@ -17,14 +17,14 @@ export const TenantOtpLogin = () => {
     }
 
     const resendOtp = async () => {
-        if (isResending) return; // Prevent multiple requests
-    
+        if (isResending) return;
+
         setIsResending(true);
         setResendMessage('');
-    
+
         try {
             const response = await axios.post("http://localhost:5000/tenant/resend-otp", { email });
-    
+
             if (response.data.error) {
                 setResendMessage('Failed to resend OTP. Please try again.');
             } else {
@@ -34,10 +34,9 @@ export const TenantOtpLogin = () => {
             console.error("Error resending OTP:", error);
             setResendMessage('Error resending OTP. Please try again.');
         }
-    
-        setTimeout(() => setIsResending(false), 60 * 1000); // 1-minute cooldown
+
+        setTimeout(() => setIsResending(false), 60 * 1000);
     };
-    
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -57,19 +56,21 @@ export const TenantOtpLogin = () => {
             setError('Error verifying OTP');
         }
     };
-  return (
-    <div className="relative bg-gradient-to-br from-[#F6F4EB] via-[#E3DAC9] to-[#D8B258] min-h-screen flex items-center justify-center px-4 overflow-hidden">
-            {/* Expanded Wave Background */}
-            <div className="absolute top-0 left-0 w-full h-1/2">
+
+    return (
+        <div className="relative bg-gradient-to-br from-[#F6F4EB] via-[#E3DAC9] to-[#D8B258] min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 overflow-hidden">
+            {/* Wave Background */}
+            <div className="absolute top-0 left-0 w-full h-1/2 pointer-events-none">
                 <svg className="absolute top-0 w-full" viewBox="0 0 1440 320">
                     <path fill="#D96851" fillOpacity="1" d="M0,160L80,186.7C160,213,320,267,480,277.3C640,288,800,256,960,234.7C1120,213,1280,203,1360,208L1440,224V0H0Z"></path>
                     <path fill="#D8B258" fillOpacity="0.4" d="M0,224L100,192C200,160,400,96,600,128C800,160,1000,288,1200,304C1400,320,1600,256,1700,224L1800,192V0H0Z"></path>
                 </svg>
             </div>
-            {/* Glassmorphic OTP Card */}
-            <div className="relative bg-white p-12 rounded-3xl shadow-2xl w-full max-w-md z-10 text-center border border-gray-200 backdrop-blur-lg bg-opacity-90">
-                <h2 className="text-3xl font-bold text-[#103538]">Enter OTP</h2>
-                <p className="text-gray-500 mb-6">OTP sent to your email</p>
+
+            {/* OTP Card */}
+            <div className="relative bg-white px-6 py-10 sm:p-12 rounded-3xl shadow-2xl w-full max-w-md z-10 text-center border border-gray-200 backdrop-blur-lg bg-opacity-90">
+                <h2 className="text-2xl sm:text-3xl font-bold text-[#103538]">Enter OTP</h2>
+                <p className="text-gray-500 mb-6 text-sm sm:text-base">OTP sent to your email</p>
 
                 <form className="space-y-4" onSubmit={handleSubmit}>
                     <input
@@ -78,29 +79,29 @@ export const TenantOtpLogin = () => {
                         value={otp}
                         onChange={(e) => setOtp(e.target.value)}
                         required
-                        className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#759B87] transition bg-gray-50 shadow-sm"
+                        className="w-full p-3 sm:p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#759B87] transition bg-gray-50 shadow-sm text-sm sm:text-base"
                     />
                     {error && <span className="text-sm text-red-600">{error}</span>}
 
-                    <button 
-                        type="submit" 
-                        className="w-full mt-4 bg-[#103538] text-white py-3 rounded-lg font-semibold hover:bg-[#759B87] transition shadow-lg transform hover:scale-105 hover:shadow-xl"
+                    <button
+                        type="submit"
+                        className="w-full mt-4 bg-[#103538] text-white py-2 sm:py-3 rounded-lg font-semibold hover:bg-[#759B87] transition shadow-lg transform hover:scale-105 hover:shadow-xl text-sm sm:text-base"
                     >
                         Verify OTP
                     </button>
 
                     {/* Resend OTP Section */}
                     <div className="mt-4">
-                        <p 
-                            className={`text-gray-500 cursor-pointer ${isResending ? 'opacity-50 cursor-not-allowed' : ''}`} 
+                        <p
+                            className={`text-gray-500 cursor-pointer text-sm sm:text-base ${isResending ? 'opacity-50 cursor-not-allowed' : ''}`}
                             onClick={resendOtp}
                         >
                             {isResending ? 'Resending OTP...' : 'Resend OTP'}
                         </p>
-                        {resendMessage && <p className="text-sm text-green-600">{resendMessage}</p>}
+                        {resendMessage && <p className="text-sm text-green-600 mt-1">{resendMessage}</p>}
                     </div>
                 </form>
             </div>
         </div>
-  )
-}
+    );
+};
