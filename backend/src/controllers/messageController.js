@@ -16,10 +16,16 @@ const getConversationDetails = async (messages, tenantId, landlordId, propertyId
     const lastMessage = messages.length > 0 ? messages[messages.length - 1] : null
 
     // Count unread messages for tenant
-    const unreadForTenant = messages.filter((msg) => msg.receiverId === tenantId && !msg.read).length
+    const unreadForTenant = messages.filter(
+      (msg) => msg.receiverId.toString() === tenantId.toString() && !msg.read,
+    ).length
+
 
     // Count unread messages for landlord
-    const unreadForLandlord = messages.filter((msg) => msg.receiverId === landlordId && !msg.read).length
+    const unreadForLandlord = messages.filter(
+      (msg) => msg.receiverId.toString() === landlordId.toString() && !msg.read,
+    ).length
+
 
     return {
       _id: propertyId,
@@ -47,7 +53,7 @@ const getConversationDetails = async (messages, tenantId, landlordId, propertyId
             senderId: lastMessage.senderId,
           }
         : null,
-      unreadCount: tenantId ? unreadForTenant : unreadForLandlord,
+        unreadCount: tenantId.toString() === messages[0]?.senderId.toString() ? unreadForTenant : unreadForLandlord,
     }
   } catch (error) {
     console.error("Error getting conversation details:", error)
@@ -221,7 +227,7 @@ exports.markMessagesAsRead = async (req, res) => {
     const { conversationId, userId, userType } = req.body
 
     // Update all messages where user is the receiver and messages are unread
-    await Message.updateMany(
+    const result =await Message.updateMany(
       {
         propertyId: conversationId,
         receiverId: userId,
@@ -236,6 +242,8 @@ exports.markMessagesAsRead = async (req, res) => {
     res.status(200).json({
       error: false,
       message: "Messages marked as read",
+      updatedCount: result.modifiedCount || result.nModified || 0,
+
     })
   } catch (error) {
     console.error("Error marking messages as read:", error)
@@ -245,3 +253,9 @@ exports.markMessagesAsRead = async (req, res) => {
     })
   }
 }
+
+
+
+    
+      
+    

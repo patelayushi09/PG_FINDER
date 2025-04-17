@@ -4,8 +4,6 @@ import axios from "axios"
 import { formatDistanceToNow } from 'date-fns'
 
 
-
-
 const API_BASE_URL = "http://localhost:5000"
 
 export default function Message() {
@@ -169,7 +167,7 @@ export default function Message() {
                     Property
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Last Message
+                    Message
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Time
