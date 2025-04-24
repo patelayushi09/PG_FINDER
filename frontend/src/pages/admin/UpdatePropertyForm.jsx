@@ -14,7 +14,7 @@ const UpdatePropertyForm = ({ property, onClose, onPropertyUpdated }) => {
   useEffect(() => {
     const fetchStates = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/state/getallstates");
+        const res = await axios.get("https://pgfinderbackend.onrender.com/state/getallstates");
         setStates(res.data.data || []);
       } catch (error) {
         console.error("Error fetching states:", error);
@@ -31,7 +31,7 @@ const UpdatePropertyForm = ({ property, onClose, onPropertyUpdated }) => {
     }
     const fetchCities = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/city/getcitybystate/${selectedState}`);
+        const res = await axios.get(`https://pgfinderbackend.onrender.com/city/getcitybystate/${selectedState}`);
         setCities(res.data.data || []);
       } catch (error) {
         console.error("Error fetching cities:", error);
@@ -48,7 +48,7 @@ const UpdatePropertyForm = ({ property, onClose, onPropertyUpdated }) => {
     }
     const fetchAreas = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/area/getareabycityid/${selectedCity}`);
+        const res = await axios.get(`https://pgfinderbackend.onrender.com/area/getareabycityid/${selectedCity}`);
         setAreas(res.data.data || []);
       } catch (error) {
         console.error("Error fetching areas:", error);
@@ -72,7 +72,7 @@ const UpdatePropertyForm = ({ property, onClose, onPropertyUpdated }) => {
         stateId: selectedState,
         cityId: selectedCity,
       };
-      const res = await axios.put(`http://localhost:5000/admin/properties/${property._id}`, updatedData);
+      const res = await axios.put(`https://pgfinderbackend.onrender.com/admin/properties/${property._id}`, updatedData);
       onPropertyUpdated(res.data); // Call onPropertyUpdated with updated property data
       reset();
       onClose();

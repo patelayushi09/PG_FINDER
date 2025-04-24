@@ -33,7 +33,7 @@ const SettingBox = () => {
             return;
         }
 
-        const response = await axios.get(`http://localhost:5000/landlord/${landlordId}`, {
+        const response = await axios.get(`https://pgfinderbackend.onrender.com/landlord/${landlordId}`, {
             headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -65,7 +65,7 @@ const SettingBox = () => {
         try {
           const landlordId = localStorage.getItem("landlordId");
           const token = localStorage.getItem("accessToken");
-          await axios.put(`http://localhost:5000/landlord/${landlordId}`, { profileImage: fileInfo.cdnUrl }, {
+          await axios.put(`https://pgfinderbackend.onrender.com/landlord/${landlordId}`, { profileImage: fileInfo.cdnUrl }, {
             headers: { Authorization: `Bearer ${token}` },
           });
         } catch (error) {
@@ -84,7 +84,7 @@ const SettingBox = () => {
     try {
       const landlordId = localStorage.getItem("landlordId");
       const token = localStorage.getItem("accessToken");
-      await axios.put(`http://localhost:5000/landlord/${landlordId}`, {
+      await axios.put(`https://pgfinderbackend.onrender.com/landlord/${landlordId}`, {
         name: formData.fullName,
         email: formData.email,
         phoneno: formData.phone,

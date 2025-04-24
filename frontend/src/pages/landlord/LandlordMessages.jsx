@@ -26,7 +26,7 @@ export default function LandlordMessages() {
   useEffect(() => {
     if (selectedConversation?.property?._id) {
       axios
-        .post("http://localhost:5000/landlord/fetch-property", {
+        .post("https://pgfinderbackend.onrender.com/landlord/fetch-property", {
           propertyId: selectedConversation.property._id,
         })
         .then((res) => {

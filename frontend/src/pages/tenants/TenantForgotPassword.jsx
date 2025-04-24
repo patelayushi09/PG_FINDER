@@ -18,7 +18,7 @@ export const TenantForgotPassword = () => {
         }
 
         try {
-            const response = await axios.post("http://localhost:5000/tenant/send-otp", { email });
+            const response = await axios.post("https://pgfinderbackend.onrender.com/tenant/send-otp", { email });
 
             if (response.data.error) {
                 setError(response.data.message);

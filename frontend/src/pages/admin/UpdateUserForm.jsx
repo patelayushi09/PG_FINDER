@@ -15,7 +15,7 @@ const UpdateUserForm = ({ user, closeForm, fetchUsers }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:5000/admin/users/${user._id}`, {
+      const response = await fetch(`https://pgfinderbackend.onrender.com/admin/users/${user._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

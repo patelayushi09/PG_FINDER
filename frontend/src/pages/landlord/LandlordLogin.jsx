@@ -24,7 +24,7 @@ export const LandlordLogin = () => {
         }
     
         try {
-            const response = await axios.post('http://localhost:5000/landlord/login', { email, password });
+            const response = await axios.post('https://pgfinderbackend.onrender.com/landlord/login', { email, password });
     
             if (response.data.error === false) {
                 localStorage.setItem('accessToken', response.data.accessToken);

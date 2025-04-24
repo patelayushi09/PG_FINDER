@@ -22,7 +22,7 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
   // Fetch all states
   useEffect(() => {
     axios
-      .get("http://localhost:5000/state/getallstates")
+      .get("https://pgfinderbackend.onrender.com/state/getallstates")
       .then((res) => setStates(res.data.data || []))
       .catch((error) => console.error("Error fetching states:", error))
   }, [])
@@ -33,7 +33,7 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
     setIsLoading(true)
 
     axios
-      .get("http://localhost:5000/admin/landlords", {
+      .get("https://pgfinderbackend.onrender.com/admin/landlords", {
         headers: {
           Authorization: token ? `Bearer ${token}` : "",
         },
@@ -55,7 +55,7 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
       return
     }
     axios
-      .get(`http://localhost:5000/city/getcitybystate/${selectedState}`)
+      .get(`https://pgfinderbackend.onrender.com/city/getcitybystate/${selectedState}`)
       .then((res) => setCities(res.data.data || []))
       .catch((error) => console.error("Error fetching cities:", error))
   }, [selectedState])
@@ -67,7 +67,7 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
       return
     }
     axios
-      .get(`http://localhost:5000/area/getareabycityid/${selectedCity}`)
+      .get(`https://pgfinderbackend.onrender.com/area/getareabycityid/${selectedCity}`)
       .then((res) => setAreas(res.data.data || []))
       .catch((error) => console.error("Error fetching areas:", error))
   }, [selectedCity])
@@ -111,7 +111,7 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
 
 
     try {
-      const res = await axios.post("http://localhost:5000/admin/properties", payload, {
+      const res = await axios.post("https://pgfinderbackend.onrender.com/admin/properties", payload, {
         headers: {
           "Content-Type": "application/json",
           Authorization: token ? `Bearer ${token}` : "",

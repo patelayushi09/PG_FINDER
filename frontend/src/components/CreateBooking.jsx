@@ -59,7 +59,7 @@ export default function CreateBooking({ propertyId, propertyName, price = 0, lan
     setSuccess(null);
     const token = localStorage.getItem('accessToken');
 
-    const response = await axios.post("http://localhost:5000/tenant/bookings", bookingData, {
+    const response = await axios.post("https://pgfinderbackend.onrender.com/tenant/bookings", bookingData, {
       headers: { Authorization: `Bearer ${token}` },
     });
 

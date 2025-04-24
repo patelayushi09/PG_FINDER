@@ -23,7 +23,7 @@ export const TenantChangePassword = () => {
     if (password.length < 6) return setError('Password must be at least 6 characters long');
 
     try {
-      const response = await axios.post("http://localhost:5000/tenant/change-password", { email, password });
+      const response = await axios.post("https://pgfinderbackend.onrender.com/tenant/change-password", { email, password });
 
       if (response.data.error) {
         setError(response.data.message);

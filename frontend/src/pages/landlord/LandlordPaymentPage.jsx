@@ -14,7 +14,7 @@ const LandlordPaymentPage = () => {
         const fetchPayments = async () => {
             try {
                 const token = localStorage.getItem("accessToken")
-                const response = await axios.get(`http://localhost:5000/landlord/payments/${landlordId}`, {
+                const response = await axios.get(`https://pgfinderbackend.onrender.com/landlord/payments/${landlordId}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 })
 

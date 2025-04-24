@@ -26,7 +26,7 @@ function AdminHomePage() {
           return;
         }
 
-        const response = await axios.get(`http://localhost:5000/admin/dashboard`, {
+        const response = await axios.get(`https://pgfinderbackend.onrender.com/admin/dashboard`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

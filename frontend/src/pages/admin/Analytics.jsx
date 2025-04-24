@@ -16,7 +16,7 @@ const Analytics = () => {
     const fetchAnalytics = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get("http://localhost:5000/admin/analytics");
+        const response = await axios.get("https://pgfinderbackend.onrender.com/admin/analytics");
         setAnalyticsData({
           totalProperties: response.data.totalProperties,
           totalBookings: response.data.totalBookings,

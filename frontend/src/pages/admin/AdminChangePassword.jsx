@@ -38,7 +38,7 @@ const AdminChangePassword = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/admin/change-password", { email, password });
+      const response = await axios.post("https://pgfinderbackend.onrender.com/admin/change-password", { email, password });
 
       if (response.data.error) {
         setError(response.data.message);

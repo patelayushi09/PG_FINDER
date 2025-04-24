@@ -32,7 +32,7 @@ export const SignUp = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/tenant/signup', signupInfo);
+      const response = await axios.post('https://pgfinderbackend.onrender.com/tenant/signup', signupInfo);
 
       if (response.data.error === false) {
         toast.success(response.data.message, {

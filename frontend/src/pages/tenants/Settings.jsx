@@ -37,7 +37,7 @@ function Settings() {
       const token = localStorage.getItem("accessToken")
       const tenantId = localStorage.getItem("tenantId")
 
-      const response = await axios.get(`http://localhost:5000/tenant/${tenantId}`, {
+      const response = await axios.get(`https://pgfinderbackend.onrender.com/tenant/${tenantId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
 
@@ -77,7 +77,7 @@ function Settings() {
             profileImage: fileInfo.cdnUrl,
           }
 
-          const response = await axios.put(`http://localhost:5000/tenant/${tenantId}`, updateData, {
+          const response = await axios.put(`https://pgfinderbackend.onrender.com/tenant/${tenantId}`, updateData, {
             headers: { Authorization: `Bearer ${token}` },
           })
 
@@ -129,7 +129,7 @@ function Settings() {
         profileImage: image || tenant.profileImage,
       }
 
-      const response = await axios.put(`http://localhost:5000/tenant/${tenantId}`, updateData, {
+      const response = await axios.put(`https://pgfinderbackend.onrender.com/tenant/${tenantId}`, updateData, {
         headers: { Authorization: `Bearer ${token}` },
       })
 

@@ -4,7 +4,7 @@ import axios from "axios"
 import moment from "moment"
 import InputEmoji from "react-input-emoji"
 
-const API_BASE_URL = "http://localhost:5000"
+const API_BASE_URL = "https://pgfinderbackend.onrender.com"
 
 export default function Messages() {
   const [landlords, setLandlords] = useState([])

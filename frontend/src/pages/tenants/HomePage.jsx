@@ -30,7 +30,7 @@ export const HomePage = () => {
         console.log("Sending data:", formData);
       
         try {
-          const response = await axios.post("http://localhost:5000/tenant/contact", formData);
+          const response = await axios.post("https://pgfinderbackend.onrender.com/tenant/contact", formData);
           console.log("Response:", response.data);
           alert(response.data.message);
         } catch (error) {

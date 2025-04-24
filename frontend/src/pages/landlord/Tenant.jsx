@@ -10,7 +10,7 @@ const Tenant = () => {
   useEffect(() => {
     const fetchConfirmedTenants = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/landlord/tenants/confirmed");
+        const response = await axios.get("https://pgfinderbackend.onrender.com/landlord/tenants/confirmed");
         setTenants(response.data.tenants);
       } catch (error) {
         console.error("Error fetching tenants:", error);

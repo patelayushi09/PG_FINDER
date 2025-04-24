@@ -15,7 +15,7 @@ export default function PaymentPage() {
         const fetchConfirmedBookings = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`http://localhost:5000/tenant/bookings/${tenantId}`);
+                const response = await axios.get(`https://pgfinderbackend.onrender.com/tenant/bookings/${tenantId}`);
                 const confirmedBookings = response.data.data.filter(
                     (booking) => booking.status === "confirmed" 
                 );
@@ -82,7 +82,7 @@ export default function PaymentPage() {
                 return;
             }
 
-            const orderResponse = await axios.post(`http://localhost:5000/orders`, {
+            const orderResponse = await axios.post(`https://pgfinderbackend.onrender.com/orders`, {
                 amount: Math.round(booking.totalAmount * 100),
                 currency: "INR",
             });
@@ -98,7 +98,7 @@ export default function PaymentPage() {
                     try {
                         setPaymentId(response.razorpay_payment_id);
 
-                        await axios.post(`http://localhost:5000/tenant/payment/verify`, {
+                        await axios.post(`https://pgfinderbackend.onrender.com/tenant/payment/verify`, {
                             bookingId: booking._id,
                             paymentId: response.razorpay_payment_id,
                             orderId: response.razorpay_order_id,
@@ -140,7 +140,7 @@ export default function PaymentPage() {
 
     const verifyPaymentStatus = async (paymentId) => {
         try {
-            const response = await axios.get(`http://localhost:5000/payment/${paymentId}`);
+            const response = await axios.get(`https://pgfinderbackend.onrender.com/payment/${paymentId}`);
             if (response.data.status === "captured" || response.data.status === "authorized") {
                 toast.success(`Payment verified: ${response.data.status}`);
             }

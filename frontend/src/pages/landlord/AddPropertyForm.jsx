@@ -17,19 +17,19 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
   const [imageError, setImageError] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:5000/state/getallstates")
+    axios.get("https://pgfinderbackend.onrender.com/state/getallstates")
       .then((res) => setStates(res.data.data || []));
   }, []);
 
   useEffect(() => {
     if (!selectedState) return setCities([]);
-    axios.get(`http://localhost:5000/city/getcitybystate/${selectedState}`)
+    axios.get(`https://pgfinderbackend.onrender.com/city/getcitybystate/${selectedState}`)
       .then((res) => setCities(res.data.data || []));
   }, [selectedState]);
 
   useEffect(() => {
     if (!selectedCity) return setAreas([]);
-    axios.get(`http://localhost:5000/area/getareabycityid/${selectedCity}`)
+    axios.get(`https://pgfinderbackend.onrender.com/area/getareabycityid/${selectedCity}`)
       .then((res) => setAreas(res.data.data || []));
   }, [selectedCity]);
 
@@ -59,7 +59,7 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
     const token = localStorage.getItem("accessToken");
 
     try {
-      const res = await axios.post("http://localhost:5000/landlord/properties", formData, {
+      const res = await axios.post("https://pgfinderbackend.onrender.com/landlord/properties", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: token ? `Bearer ${token}` : "",

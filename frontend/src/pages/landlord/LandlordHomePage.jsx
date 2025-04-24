@@ -45,7 +45,7 @@ function LandlordHomePage() {
     const fetchDashboardData = async () => {
       try {
         setLoading(true)
-        const response = await axios.get(`http://localhost:5000/landlord/dashboard/${landlordId}`, {
+        const response = await axios.get(`https://pgfinderbackend.onrender.com/landlord/dashboard/${landlordId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
 

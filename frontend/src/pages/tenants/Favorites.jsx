@@ -19,7 +19,7 @@ function Favorites() {
         return
       }
 
-      const response = await axios.get(`http://localhost:5000/tenant/favorites/${tenantId}`)
+      const response = await axios.get(`https://pgfinderbackend.onrender.com/tenant/favorites/${tenantId}`)
       const properties = response.data.data || []
 
       const formattedProperties = properties.map((property) => ({

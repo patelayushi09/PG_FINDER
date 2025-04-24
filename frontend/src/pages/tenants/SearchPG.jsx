@@ -26,7 +26,7 @@ function SearchPG() {
       const tenantId = localStorage.getItem("tenantId")
       if (!tenantId) return
 
-      const response = await axios.get(`http://localhost:5000/tenant/favorites/${tenantId}`)
+      const response = await axios.get(`https://pgfinderbackend.onrender.com/tenant/favorites/${tenantId}`)
       const favorites = response.data.data || []
       const favoriteIdSet = new Set(favorites.map((fav) => fav._id || fav.id))
       setFavoriteIds(favoriteIdSet)
@@ -37,7 +37,7 @@ function SearchPG() {
 
   const fetchProperties = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/tenant/properties")
+      const response = await axios.get("https://pgfinderbackend.onrender.com/tenant/properties")
       setProperties(response.data.data)
     } catch (error) {
       console.error("Error fetching properties:", error)

@@ -24,7 +24,7 @@ export const Login = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/tenant/login", { email, password });
+      const response = await axios.post("https://pgfinderbackend.onrender.com/tenant/login", { email, password });
 
       if (response.data.error === false) {
         localStorage.setItem("accessToken", response.data.accessToken);

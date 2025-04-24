@@ -15,7 +15,7 @@ const Booking = () => {
       try {
         const token = localStorage.getItem("accessToken");
         const response = await axios.get(
-          `http://localhost:5000/landlord/bookings/${landlordId}`,
+          `https://pgfinderbackend.onrender.com/landlord/bookings/${landlordId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -36,7 +36,7 @@ const Booking = () => {
     try {
       const token = localStorage.getItem("accessToken");
       await axios.put(
-        `http://localhost:5000/landlord/bookings/${bookingId}/status`,
+        `https://pgfinderbackend.onrender.com/landlord/bookings/${bookingId}/status`,
         { status },
         { headers: { Authorization: `Bearer ${token}` } }
       );

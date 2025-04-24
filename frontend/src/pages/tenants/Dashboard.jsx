@@ -44,7 +44,7 @@ function Dashboard() {
         }
 
         const response = await axios.get(
-          `http://localhost:5000/tenant/dashboard/${tenantId}`,
+          `https://pgfinderbackend.onrender.com/tenant/dashboard/${tenantId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

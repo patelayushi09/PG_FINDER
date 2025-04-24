@@ -4,7 +4,7 @@ import axios from "axios"
 import { formatDistanceToNow } from 'date-fns'
 
 
-const API_BASE_URL = "http://localhost:5000"
+const API_BASE_URL = "https://pgfinderbackend.onrender.com"
 
 export default function Message() {
   const [conversations, setConversations] = useState([])

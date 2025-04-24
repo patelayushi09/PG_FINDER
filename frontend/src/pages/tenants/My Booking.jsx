@@ -9,7 +9,7 @@ export default function MyBookings() {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/tenant/bookings/${tenantId}`);
+        const response = await axios.get(`https://pgfinderbackend.onrender.com/tenant/bookings/${tenantId}`);
         setBookings(response.data.data);
       } catch (error) {
         console.error("Error fetching bookings:", error);

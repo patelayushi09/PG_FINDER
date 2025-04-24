@@ -23,7 +23,7 @@ export const TenantOtpLogin = () => {
         setResendMessage('');
 
         try {
-            const response = await axios.post("http://localhost:5000/tenant/resend-otp", { email });
+            const response = await axios.post("https://pgfinderbackend.onrender.com/tenant/resend-otp", { email });
 
             if (response.data.error) {
                 setResendMessage('Failed to resend OTP. Please try again.');
@@ -42,7 +42,7 @@ export const TenantOtpLogin = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post('http://localhost:5000/tenant/forgot-password/otp', { email, otp });
+            const response = await axios.post('https://pgfinderbackend.onrender.com/tenant/forgot-password/otp', { email, otp });
 
             if (response.data.error) {
                 setError(response.data.message);

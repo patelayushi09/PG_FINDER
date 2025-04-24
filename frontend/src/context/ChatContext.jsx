@@ -43,7 +43,7 @@ export function ChatProvider({ children }) {
   useEffect(() => {
     if (!userId) return;
 
-    const newSocket = io("http://localhost:5000");
+    const newSocket = io("https://pgfinderbackend.onrender.com");
     setSocket(newSocket);
 
     return () => {
@@ -117,7 +117,7 @@ export function ChatProvider({ children }) {
     try {
       const endpoint = userType === "tenant" ? `/message/tenant/${userId}/conversations` : `/message/landlord/${userId}/conversations`;
 
-      const response = await axios.get(`http://localhost:5000${endpoint}`);
+      const response = await axios.get(`https://pgfinderbackend.onrender.com${endpoint}`);
 
       if (response.data.error === false) {
         setConversations(response.data.data);
@@ -144,7 +144,7 @@ export function ChatProvider({ children }) {
     setError(null);
 
     try {
-      const response = await axios.get(`http://localhost:5000/message/conversations/${conversationId}`);
+      const response = await axios.get(`https://pgfinderbackend.onrender.com/message/conversations/${conversationId}`);
 
       if (response.data.error === false) {
         setMessages(response.data.data);
@@ -175,7 +175,7 @@ export function ChatProvider({ children }) {
       if (!userId) return;
 
       try {
-        await axios.put(`http://localhost:5000/message/read`, {
+        await axios.put(`https://pgfinderbackend.onrender.com/message/read`, {
           conversationId,
           userId,
           userType,
@@ -217,7 +217,7 @@ export function ChatProvider({ children }) {
       };
 
       try {
-        const response = await axios.post(`http://localhost:5000/message`, messageData);
+        const response = await axios.post(`https://pgfinderbackend.onrender.com/message`, messageData);
 
         if (response.data.error === false) {
           const newMessage = response.data.data;

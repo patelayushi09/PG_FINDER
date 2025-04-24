@@ -18,7 +18,7 @@ const AdminForgotPassword = () => {
         }
 
         try {
-            const response = await axios.post("http://localhost:5000/admin/send-otp", { email });
+            const response = await axios.post("https://pgfinderbackend.onrender.com/admin/send-otp", { email });
 
             if (response.data.error) {
                 setError(response.data.message);

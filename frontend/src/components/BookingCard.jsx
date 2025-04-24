@@ -49,7 +49,7 @@ export function BookingCard({ bookingId, propertyId, checkInDate, checkOutDate, 
     if (!confirmDelete) return;
 
     try {
-      await axios.delete(`http://localhost:5000/tenant/bookings/${bookingId}`);
+      await axios.delete(`https://pgfinderbackend.onrender.com/tenant/bookings/${bookingId}`);
       onDelete(bookingId); // Remove from UI after deletion
     } catch (error) {
       console.error("Error deleting booking:", error);

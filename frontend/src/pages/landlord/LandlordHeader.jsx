@@ -21,7 +21,7 @@ export const LandlordHeader = () => {
       const token = localStorage.getItem("accessToken")
       const landlordId = localStorage.getItem("landlordId");
 
-      const response = await axios.get(`http://localhost:5000/landlord/${landlordId}`, {
+      const response = await axios.get(`https://pgfinderbackend.onrender.com/landlord/${landlordId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
 

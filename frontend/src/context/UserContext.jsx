@@ -26,7 +26,7 @@ export function UserProvider({ children }) {
       }
 
       if (tenantId) {
-        const tenantResponse = await axios.get(`http://localhost:5000/tenant/${tenantId}`, {
+        const tenantResponse = await axios.get(`https://pgfinderbackend.onrender.com/tenant/${tenantId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (tenantResponse.data.error === false) {
@@ -38,7 +38,7 @@ export function UserProvider({ children }) {
       }
 
       if (landlordId) {
-        const landlordResponse = await axios.get(`http://localhost:5000/landlord/${landlordId}`, {
+        const landlordResponse = await axios.get(`https://pgfinderbackend.onrender.com/landlord/${landlordId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (landlordResponse.data.error === false) {

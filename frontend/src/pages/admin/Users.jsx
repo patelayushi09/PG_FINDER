@@ -20,7 +20,7 @@ const Users = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("http://localhost:5000/admin/users");
+      const response = await fetch("https://pgfinderbackend.onrender.com/admin/users");
       const data = await response.json();
       setUsers(data);
     } catch (error) {
@@ -33,7 +33,7 @@ const Users = () => {
       let query = `?role=${filter.role}&status=${filter.status.toLowerCase()}`; // Convert status to lowercase
       console.log("Fetching users with query:", query); // Debugging
 
-      const response = await fetch(`http://localhost:5000/admin/users${query}`);
+      const response = await fetch(`https://pgfinderbackend.onrender.com/admin/users${query}`);
       const data = await response.json();
 
       console.log("Fetched Users:", data); // Debugging
@@ -50,7 +50,7 @@ const Users = () => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/admin/users/${userId}`, {
+      const response = await fetch(`https://pgfinderbackend.onrender.com/admin/users/${userId}`, {
         method: "DELETE",
       });
 

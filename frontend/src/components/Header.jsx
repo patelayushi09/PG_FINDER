@@ -17,7 +17,7 @@ export function Header() {
       const token = localStorage.getItem("accessToken")
       const tenantId = localStorage.getItem("tenantId")
 
-      const response = await axios.get(`http://localhost:5000/tenant/${tenantId}`, {
+      const response = await axios.get(`https://pgfinderbackend.onrender.com/tenant/${tenantId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
 

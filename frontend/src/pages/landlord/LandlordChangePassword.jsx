@@ -37,7 +37,7 @@ export const LandlordChangePassword = () => {
           return;
         }
         try {
-            const response = await axios.post("http://localhost:5000/landlord/change-password", { email, password });
+            const response = await axios.post("https://pgfinderbackend.onrender.com/landlord/change-password", { email, password });
       
             if (response.data.error) {
               setError(response.data.message);

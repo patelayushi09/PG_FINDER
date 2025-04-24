@@ -52,7 +52,7 @@
 
 //       if (isFavorited) {
 //         // For delete request, send tenantId and propertyId as URL parameters
-//         const response = await axios.delete(`http://localhost:5000/tenant/favorites/${tenantId}/${propertyId}`);
+//         const response = await axios.delete(`https://pgfinderbackend.onrender.com/tenant/favorites/${tenantId}/${propertyId}`);
 //         if (response.status === 200) {
 //           setIsFavorited(false);
 //           if (onFavorite) {
@@ -61,7 +61,7 @@
 //         }
 //       } else {
 //         // For post request, send data in the body
-//         const response = await axios.post(`http://localhost:5000/tenant/favorites`, {
+//         const response = await axios.post(`https://pgfinderbackend.onrender.com/tenant/favorites`, {
 //           tenantId,
 //           propertyId
 //         });
@@ -216,7 +216,7 @@ export function PropertyCard({
 
       if (isFavorited) {
         // For delete request, send tenantId and propertyId as URL parameters
-        const response = await axios.delete(`http://localhost:5000/tenant/favorites/${tenantId}/${propertyId}`)
+        const response = await axios.delete(`https://pgfinderbackend.onrender.com/tenant/favorites/${tenantId}/${propertyId}`)
         if (response.status === 200) {
           setIsFavorited(false)
           if (onFavorite) {
@@ -225,7 +225,7 @@ export function PropertyCard({
         }
       } else {
         // For post request, send data in the body
-        const response = await axios.post(`http://localhost:5000/tenant/favorites`, {
+        const response = await axios.post(`https://pgfinderbackend.onrender.com/tenant/favorites`, {
           tenantId,
           propertyId,
         })

@@ -17,7 +17,7 @@ const PGLocationSelector = ({ onSelect }) => {
   useEffect(() => {
     const fetchStates = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/state/getallstates");
+        const res = await axios.get("https://pgfinderbackend.onrender.com/state/getallstates");
         setStates(res.data.data || []);
       } catch (error) {
         console.error("Error fetching states:", error);
@@ -36,7 +36,7 @@ const PGLocationSelector = ({ onSelect }) => {
 
     const fetchCities = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/city/getcitybystate/${selectedState}`);
+        const res = await axios.get(`https://pgfinderbackend.onrender.com/city/getcitybystate/${selectedState}`);
         setCities(res.data.data || []);
       } catch (error) {
         console.error("Error fetching cities:", error);
@@ -55,7 +55,7 @@ const PGLocationSelector = ({ onSelect }) => {
 
     const fetchAreas = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/area/getareabycityid/${selectedCity}`);
+        const res = await axios.get(`https://pgfinderbackend.onrender.com/area/getareabycityid/${selectedCity}`);
         setAreas(res.data.data || []);
       } catch (error) {
         console.error("Error fetching areas:", error);

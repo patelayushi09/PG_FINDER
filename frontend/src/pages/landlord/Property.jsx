@@ -6,7 +6,7 @@ import UpdatePropertyForm from "./UpdatePropertyForm";
 import PropertyCard from "./PropertyCard";
 import PropertyDetails from "./PropertyDetails";
 
-const API_URL = "http://localhost:5000/landlord/properties";
+const API_URL = "https://pgfinderbackend.onrender.com/landlord/properties";
 
 const Property = () => {
   const [properties, setProperties] = useState([]);

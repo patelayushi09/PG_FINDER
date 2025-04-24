@@ -7,7 +7,7 @@ const PropertyCard = ({ property, onEdit, onDelete,onClick }) => {
       if (property.image.startsWith("http")) {
         return property.image;
       }
-      return `http://localhost:5000/${property.image}`;
+      return `https://pgfinderbackend.onrender.com/${property.image}`;
     }
     return "https://via.placeholder.com/150?text=No+Image";
   };

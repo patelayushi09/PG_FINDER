@@ -6,7 +6,7 @@ import UpdatePropertyForm from "./UpdatePropertyForm";
 import PropertyDetails from "../tenants/PropertyDetails";
 import PropertyFilter from "./PropertyFilter";
 
-const API_URL = "http://localhost:5000/admin/properties";
+const API_URL = "https://pgfinderbackend.onrender.com/admin/properties";
 
 const Properties = () => {
   const [showForm, setShowForm] = useState(false);
