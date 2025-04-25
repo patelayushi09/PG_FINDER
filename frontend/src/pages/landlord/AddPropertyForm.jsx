@@ -177,3 +177,5 @@ const AddPropertyForm = ({ onClose, onPropertyAdded }) => {
 };
 
 export default AddPropertyForm;
+
+
